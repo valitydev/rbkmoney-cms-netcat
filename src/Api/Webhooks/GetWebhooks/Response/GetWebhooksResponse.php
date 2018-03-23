@@ -13,7 +13,7 @@ class GetWebhooksResponse extends RbkDataObject implements ResponseInterface
     /**
      * @var array | WebhookResponse[]
      */
-    public $webhooks = [];
+    public $webhooks = array();
 
     /**
      * @param array $responseObject

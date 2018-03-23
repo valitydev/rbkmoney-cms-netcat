@@ -4,7 +4,7 @@ namespace src\Api\Webhooks;
 
 use src\Api\RbkDataObject;
 
-abstract class WebhookScope extends RbkDataObject
+class WebhookScope extends RbkDataObject
 {
     /**
      * Предмет оповещений
@@ -26,5 +26,21 @@ abstract class WebhookScope extends RbkDataObject
      * @var array
      */
     public $eventTypes;
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $properties = array();
+
+        foreach ($this as $property => $value) {
+            if (!empty($value)) {
+                $properties[$property] = $value;
+            }
+        }
+
+        return $properties;
+    }
 
 }

@@ -24,7 +24,7 @@ class Metadata
     /**
      * @return array
      */
-    public function toArray(): array
+    public function toArray()
     {
         return $this->metadata;
     }

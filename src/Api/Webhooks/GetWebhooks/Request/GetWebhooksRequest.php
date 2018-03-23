@@ -2,20 +2,20 @@
 
 namespace src\Api\Webhooks\GetWebhooks\Request;
 
-use src\Api\Interfaces\RequestInterface;
+use src\Api\Interfaces\GetRequestInterface;
 use src\Api\RbkDataObject;
 
-class GetWebhooksRequest extends RbkDataObject implements RequestInterface
+class GetWebhooksRequest extends RbkDataObject implements GetRequestInterface
 {
 
-    private const URL = '/processing/webhooks';
+    const PATH = '/processing/webhooks';
 
     /**
      * @return string
      */
-    public function getUrl(): string
+    public function getPath()
     {
-        return self::URL;
+        return self::PATH;
     }
 
 }

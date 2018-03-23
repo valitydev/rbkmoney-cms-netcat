@@ -22,7 +22,7 @@ class CartResponse extends Cart
      *
      * @return CartResponse
      */
-    public function setCost(int $cost): self
+    public function setCost($cost)
     {
         $this->cost = $cost;
 

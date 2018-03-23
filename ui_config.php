@@ -3,37 +3,53 @@
 /**
  * Class output menu in the admin
  */
-class ui_config_module_rbk extends ui_config_module {
+class ui_config_module_rbkmoney extends ui_config_module {
 
-  public $headerText = 'RBKmoney';
+    public $headerText = RBK_MONEY;
 
-  /**
-   * The output settings in the admin.
-   * @param $view
-   * @param $params
-   */
-	function ui_config_module_rbk($view, $params) {
-		$this->tabs[] = [
-			'id' => 'settings',
-			'caption' => 'Настройки',
-			'location' => 'module.rbk.settings',
-			'group' => 'admin',
-		];
+    /**
+     * The output settings in the admin.
+     * @param $view
+     * @param $params
+     */
+    function ui_config_module_rbkmoney($view, $params)
+    {
+		$this->tabs[] = array(
+            'id' => 'settings',
+            'caption' => SETTINGS,
+            'location' => 'module.rbkmoney.settings',
+            'group' => 'admin',
+        );
+        $this->tabs[] = array(
+            'id' => 'transactions',
+            'caption' => TRANSACTIONS,
+            'location' => 'module.rbkmoney.transactions',
+            'group' => 'admin',
+        );
+        $this->tabs[] = array(
+            'id' => 'recurrent',
+            'caption' => RECURRENT,
+            'location' => 'module.rbkmoney.recurrent',
+            'group' => 'admin',
+        );
+        $this->tabs[] = array(
+            'id' => 'recurrent_items',
+            'caption' => RECURRENT_ITEMS,
+            'location' => 'module.rbkmoney.recurrent_items',
+            'group' => 'admin',
+        );
 
 		$this->activeTab = $view;
-		$this->locationHash = "module.rbk.$view" . ($params ? "($params)" : '');
+		$this->locationHash = "module.rbkmoney.$view" . ($params ? "($params)" : '');
 		$this->treeMode = 'modules';
 
-		$module_settings = nc_Core::get_object()->modules->get_by_keyword('rbk');
+		$module_settings = nc_Core::get_object()->modules->get_by_keyword('rbkmoney');
 		$this->treeSelectedNode = "module-".$module_settings['Module_ID'];
 	}
-  
-  /**
-   * 
-   */
-	public function add_settings_toolbar() {
+
+	public function add_settings_toolbar()
+    {
 		$this->activeTab = 'settings';
-  }
+    }
+
 }
-
-

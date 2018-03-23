@@ -2,17 +2,17 @@
 
 namespace src\Api\Interfaces;
 
-interface PostRequestInterface
+interface PostRequestInterface extends RequestInterface
 {
 
     /**
      * @return array
      */
-    public function toArray(): array;
+    public function toArray();
 
     /**
      * @return string
      */
-    public function getUrl(): string;
+    public function getPath();
 
 }

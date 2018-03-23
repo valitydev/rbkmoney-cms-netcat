@@ -2,6 +2,8 @@
 
 namespace src\Client;
 
+use src\Api\Exceptions\WrongRequestException;
+use src\Api\Interfaces\GetRequestInterface;
 use src\Api\Interfaces\RequestInterface;
 use src\Exceptions\RequestException;
 use src\Interfaces\ClientInterface;
@@ -10,26 +12,27 @@ use src\Api\Interfaces\PostRequestInterface;
 class Client implements ClientInterface
 {
 
-    private const HTTP_OK = 200;
-    private const HTTP_CREATED = 201;
-    private const HTTP_ACCEPTED = 202;
-    private const HTTP_NO_CONTENT = 204;
+    const HTTP_OK = 200;
+    const HTTP_CREATED = 201;
+    const HTTP_ACCEPTED = 202;
+    const HTTP_NO_CONTENT = 204;
+    const SEE_OTHER = 303;
 
     /**
      * Успешные коды ответов
      */
-    private const SUCCESS_CODES = [
+    private $successCodes = array(
         self::HTTP_OK,
         self::HTTP_CREATED,
         self::HTTP_ACCEPTED,
         self::HTTP_NO_CONTENT,
-    ];
+    );
 
-    private const CONTENT_TYPE = 'Content-Type: application/json; charset=utf-8';
-    private const AUTHORIZATION = 'Authorization: Bearer ';
-    private const REQUEST_ID = 'X-Request-ID: ';
+    const CONTENT_TYPE = 'Content-Type: application/json; charset=utf-8';
+    const AUTHORIZATION = 'Authorization: Bearer ';
+    const REQUEST_ID = 'X-Request-ID: ';
 
-    private $headers = [];
+    private $headers = array();
 
     /**
      * Приватный ключ для доступа к API
@@ -55,7 +58,7 @@ class Client implements ClientInterface
      * @param string $shopId
      * @param string $url
      */
-    public function __construct(string $apiKey, string $shopId, string $url)
+    public function __construct($apiKey, $shopId, $url)
     {
         $this->apiKey = $apiKey;
         $this->shopId = $shopId;
@@ -69,30 +72,13 @@ class Client implements ClientInterface
      *
      * @return void
      */
-    private function setHeaders(): void
+    private function setHeaders()
     {
-        $this->headers = [
+        $this->headers = array(
             self::CONTENT_TYPE,
             self::AUTHORIZATION . $this->apiKey,
             self::REQUEST_ID . $this->shopId,
-        ];
-    }
-
-    /**
-     * @param PostRequestInterface $request
-     * @param string               $method
-     *
-     * @return string
-     * @throws RequestException
-     */
-    public function sendPostRequest(PostRequestInterface $request, string $method = 'POST'): string
-    {
-        return $this->sendCurl($this->url . $request->getUrl(), [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_HTTPHEADER => $this->headers,
-            CURLOPT_POSTFIELDS => json_encode($request->toArray()),
-        ]);
+        );
     }
 
     /**
@@ -100,16 +86,30 @@ class Client implements ClientInterface
      * @param string           $method
      *
      * @return string
-     *
      * @throws RequestException
+     * @throws WrongRequestException
      */
-    public function sendRequest(RequestInterface $request, string $method = 'GET'): string
+    public function sendRequest(RequestInterface $request, $method)
     {
-        return $this->sendCurl($this->url . $request->getUrl(), [
+        $params = array(
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_HTTPHEADER => $this->headers,
-        ]);
+        );
+
+        if (ClientInterface::GET === $method) {
+            if (!($request instanceof GetRequestInterface)) {
+                throw new WrongRequestException('Недопустимое значение Request');
+            }
+        } elseif (ClientInterface::POST === $method) {
+            if (!($request instanceof PostRequestInterface)) {
+                throw new WrongRequestException('Недопустимое значение Request');
+            }
+
+            $params[CURLOPT_POSTFIELDS] = json_encode($request->toArray());
+        }
+
+        return $this->sendCurl($this->url . $request->getPath(), $params);
     }
 
     /**
@@ -120,7 +120,7 @@ class Client implements ClientInterface
      *
      * @throws RequestException
      */
-    private function sendCurl(string $url, array $options): string
+    private function sendCurl($url, array $options)
     {
         $ch = curl_init($url);
 
@@ -132,10 +132,14 @@ class Client implements ClientInterface
 
         curl_close($ch);
 
-        if (!in_array($responseInfo['http_code'], self::SUCCESS_CODES)) {
-            throw new RequestException($result, $responseInfo['http_code']);
-        } elseif (false === $result) {
+        if (self::SEE_OTHER === $responseInfo['http_code']) {
+            return $responseInfo['location'];
+        }
+
+        if (false === $result) {
             throw new RequestException('Ответ от RbkMoney не получен');
+        } elseif (!in_array($responseInfo['http_code'], $this->successCodes)) {
+            throw new RequestException($result, $responseInfo['http_code']);
         }
 
         return $result;

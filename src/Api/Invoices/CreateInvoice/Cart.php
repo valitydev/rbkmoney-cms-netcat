@@ -43,11 +43,11 @@ class Cart extends RbkDataObject
      * @param int            $price
      * @param TaxMode | null $taxMode
      */
-    public function __construct(string $product, int $quantity, int $price, ?TaxMode $taxMode = null)
+    public function __construct($product, $quantity, $price, $taxMode = null)
     {
         $this->product = $product;
-        $this->quantity = $quantity;
-        $this->price = $price;
+        $this->quantity = (int) $quantity;
+        $this->price = (int) $price;
 
         $this->taxMode = $taxMode;
     }
@@ -57,7 +57,7 @@ class Cart extends RbkDataObject
      *
      * @return Cart
      */
-    public function setTaxMode(TaxMode $taxMode): self
+    public function setTaxMode(TaxMode $taxMode)
     {
         $this->taxMode = $taxMode;
 

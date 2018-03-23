@@ -1,9 +1,22 @@
 <?php
 
+use src\Api\Exceptions\WrongDataException;
+use src\Api\Exceptions\WrongRequestException;
 use src\Api\Invoices\CreateInvoice\TaxMode;
+use src\Api\Invoices\GetInvoiceById\Request\GetInvoiceByIdRequest;
+use src\Api\Payments\CancelPayment\Request\CancelPaymentRequest;
+use src\Api\Payments\CapturePayment\Request\CapturePaymentRequest;
+use src\Api\Payments\CreateRefund\Request\CreateRefundRequest;
+use src\Api\Search\SearchPayments\Request\SearchPaymentsRequest;
+use src\Api\Search\SearchPayments\Response\Payment;
+use src\Client\Client;
+use src\Client\Sender;
+use src\Exceptions\RequestException;
+use src\Paginator;
 
-class RbkAdmin
+class RbkMoneyAdmin
 {
+
     protected $modulePath;
     protected $moduleFolder;
 
@@ -11,18 +24,85 @@ class RbkAdmin
 
     protected $form;
 
+    /**
+     * @var array
+     */
+    protected $transactions = array();
+
+    /**
+     * @var string
+     */
+    protected $previousUrl;
+
+    /**
+     * @var string
+     */
+    protected $nextUrl;
+
+    /**
+     * @var array
+     */
+    protected $pages = array();
+
+    /**
+     * @var array
+     */
+    protected $recurrent = array();
+
+    /**
+     * @var array
+     */
+    protected $recurrentItems = array();
+
+    /**
+     * @var nc_Core
+     */
+    protected $nc_core;
+
     public function __construct()
     {
-        $nc_core = nc_Core::get_object();
+        $this->nc_core = nc_Core::get_object();
 
-        $this->moduleFolder = $nc_core->MODULE_FOLDER;
-        $this->modulePath = str_replace($nc_core->DOCUMENT_ROOT, '', $nc_core->MODULE_FOLDER) . 'rbk/';
+        $this->moduleFolder = $this->nc_core->MODULE_FOLDER;
+        $this->modulePath = str_replace(
+                $this->nc_core->DOCUMENT_ROOT,
+                '',
+                $this->nc_core->MODULE_FOLDER
+            ) . 'rbkmoney/';
 
-        include dirname(__DIR__) . '/rbk/src/autoload.php';
+        include dirname(__DIR__) . '/rbkmoney/src/autoload.php';
+        include dirname(__DIR__) . '/rbkmoney/settings.php';
 
-        $this->settings = $nc_core->get_settings('', 'rbk');
+        $this->settings = $this->nc_core->get_settings('', 'rbkmoney');
+    }
 
-        $this->getForm();
+    /**
+     * @return string
+     */
+    protected function getRecurrentItems()
+    {
+        $payments = $this->nc_core->db->get_results("SELECT `article` FROM `RBKmoney_Recurrent_Items`");
+
+        $result = '';
+
+        if (empty($payments)) {
+            return $result;
+        }
+
+        foreach ($payments as $payment) {
+            $result .= "$payment->article\n";
+        }
+
+        return trim($result);
+    }
+
+
+    /**
+     * Tab "Information".
+     */
+    public function info_show()
+    {
+        require_once($this->moduleFolder . 'rbkmoney/page_info.php');
     }
 
     /**
@@ -45,79 +125,388 @@ class RbkAdmin
         global $UI_CONFIG;
         $UI_CONFIG->add_settings_toolbar();
         $this->getForm();
-        require_once($this->moduleFolder . 'rbk/page_settings.php');
+
+        require_once($this->moduleFolder . 'rbkmoney/page_settings.php');
     }
 
+    public function transactions_save()
+    {
+        //
+    }
+
+    /**
+     * @param $invoiceId
+     * @param $paymentId
+     *
+     * @throws WrongRequestException
+     */
+    public function capturePayment($invoiceId, $paymentId)
+    {
+        $capturePayment = new CapturePaymentRequest(
+            $invoiceId,
+            $paymentId,
+            CAPTURED_BY_ADMIN
+        );
+
+        $client = new Client($this->settings['apiKey'], $this->settings['shopId'], RBK_MONEY_API_URL_SETTING);
+        $sender = new Sender($client);
+
+        try {
+            $sender->sendCapturePaymentRequest($capturePayment);
+        } catch (RequestException $exception) {
+            nc_print_status(PAYMENT_CAPTURE_ERROR, 'error');
+        }
+
+        nc_print_status(PAYMENT_CONFIRMED, 'ok');
+    }
+
+    /**
+     * @param $invoiceId
+     * @param $paymentId
+     *
+     * @throws WrongRequestException
+     */
+    public function cancelPayment($invoiceId, $paymentId)
+    {
+        $capturePayment = new CancelPaymentRequest(
+            $invoiceId,
+            $paymentId,
+            CANCELLED_BY_ADMIN
+        );
+
+        $client = new Client($this->settings['apiKey'], $this->settings['shopId'], RBK_MONEY_API_URL_SETTING);
+        $sender = new Sender($client);
+
+        try {
+            $sender->sendCancelPaymentRequest($capturePayment);
+        } catch (RequestException $exception) {
+            nc_print_status(PAYMENT_CANCELLED_ERROR, 'error');
+        }
+
+        nc_print_status(PAYMENT_CANCELLED, 'ok');
+    }
+
+    /**
+     * @param $invoiceId
+     * @param $paymentId
+     *
+     * @throws WrongDataException
+     * @throws WrongRequestException
+     */
+    public function createRefund($invoiceId, $paymentId)
+    {
+        $capturePayment = new CreateRefundRequest(
+            $invoiceId,
+            $paymentId,
+            REFUNDED_BY_ADMIN
+        );
+
+        $client = new Client($this->settings['apiKey'], $this->settings['shopId'], RBK_MONEY_API_URL_SETTING);
+        $sender = new Sender($client);
+
+        try {
+            $sender->sendCreateRefundRequest($capturePayment);
+        } catch (RequestException $exception) {
+            nc_print_status(REFUND_CREATE_ERROR, 'error');
+        }
+
+        nc_print_status(REFUND_CREATED, 'ok');
+    }
+
+    /**
+     * @param          $page
+     * @param DateTime $fromTime
+     * @param DateTime $toTime
+     * @param int      $limit
+     *
+     * @throws RequestException
+     * @throws WrongDataException
+     * @throws WrongRequestException
+     */
+    public function transactions_show($page, DateTime $fromTime, DateTime $toTime, $limit = 10)
+    {
+        try {
+            if (!$this->settings['apiKey']) {
+                throw new WrongDataException(ERROR_API_KEY_IS_NOT_VALID);
+            }
+            if (!$this->settings['shopId']) {
+                throw new WrongDataException(ERROR_SHOP_ID_IS_NOT_VALID);
+            }
+        } catch (WrongDataException $exception) {
+            echo $exception->getMessage();
+        }
+        if ($fromTime->getTimestamp() > $toTime->getTimestamp()) {
+            $fromTime = new DateTime('today');
+        }
+        if ($fromTime->getTimestamp() >= $toTime->getTimestamp()) {
+            $toTime = new DateTime();
+            $toTime = $toTime->setTime(23, 59, 59);
+        }
+
+        $shopId = $this->settings['shopId'];
+
+        $sender = new Sender(new Client($this->settings['apiKey'], $shopId, RBK_MONEY_API_URL_SETTING));
+
+        $paymentRequest = new SearchPaymentsRequest($shopId, $fromTime, $toTime, $limit);
+        $paymentRequest->setOffset(($page * $limit) - $limit);
+
+        $payments = $sender->sendSearchPaymentsRequest($paymentRequest);
+
+        $statuses = array(
+            'started' => STATUS_STARTED,
+            'processed' => STATUS_PROCESSED,
+            'captured' => STATUS_CAPTURED,
+            'cancelled' => STATUS_CANCELLED,
+            'charged back' => STATUS_CHARGED_BACK,
+            'refunded' => STATUS_REFUNDED,
+            'failed' => STATUS_FAILED,
+        );
+
+        /**
+         * @var $payment Payment
+         */
+        foreach ($payments->result as $payment) {
+            $invoiceRequest = new GetInvoiceByIdRequest($payment->invoiceId);
+            $invoice = $sender->sendGetInvoiceByIdRequest($invoiceRequest);
+            $metadata = $invoice->metadata->metadata;
+            $this->transactions[] = array(
+                'orderId' => $metadata['orderId'],
+                'invoiceId' => $invoice->id,
+                'paymentId' => $payment->id,
+                'product' => $invoice->product,
+                'flowStatus' => $payment->flow->type,
+                'paymentStatus' => $payment->status->getValue(),
+                'status' => $statuses[$payment->status->getValue()],
+                'amount' => $payment->amount,
+                'createdAt' => $payment->createdAt->format('Y-m-d H:i:s'),
+            );
+        }
+
+        $domain = nc_core('catalogue')->get_current('Domain');
+        $rbkMoneyPath = nc_core('catalogue')->get_url_by_host_name($domain) . nc_module_path('rbkmoney');
+        $pagePath = $rbkMoneyPath . 'admin.php?view=transactions&page=(:num)';
+        $date = "&date_from={$fromTime->format('d.m.Y')}&date_to={$toTime->format('d.m.Y')}";
+
+        $paginator = new Paginator($payments->totalCount, $limit, $page, "$pagePath?$date");
+
+        $this->previousUrl = $paginator->getPrevUrl();
+        $this->nextUrl = $paginator->getNextUrl();
+        $this->pages = $paginator->getPages();
+
+        require_once($this->moduleFolder . 'rbkmoney/page_transactions.php');
+    }
+
+    /**
+     * @return void
+     */
+    public function recurrent_items_save()
+    {
+        $ids = $this->nc_core->input->fetch_get_post('recurrentIds');
+
+        $ids = array_map(function($value) {
+            return trim($value);
+        }, explode("\n", $ids));
+
+        // Удаляем из массива всё, кроме цифр
+        $ids = array_filter($ids, function($value) {
+            if (preg_match('/^\d+$/', $value)) {
+                return true;
+            }
+
+            return false;
+        });
+
+        $this->nc_core->db->query('TRUNCATE TABLE `RBKmoney_Recurrent_Items`');
+
+        foreach ($ids as $id) {
+            $this->setRecurrent($id);
+        }
+    }
+
+    /**
+     * Сохранение id товаров регулярных платежей
+     *
+     * @param string $value
+     *
+     * @return bool
+     */
+    public function setRecurrent($value)
+    {
+        // подготовка записи в БД
+        $value = $this->nc_core->db->escape($value);
+
+        $id = $this->nc_core->db->get_var("SELECT `id` FROM `RBKmoney_Recurrent_Items` WHERE `article` = '$value'");
+
+        if (!$id) {
+            $this->nc_core->db->query("INSERT INTO `RBKmoney_Recurrent_Items` (`article`) VALUES ('$value')");
+        }
+
+        return true;
+    }
+
+    /**
+     * Вывод страницы "Товары для регулярных платежей"
+     */
+    public function recurrent_items_show()
+    {
+        global $UI_CONFIG;
+
+        $this->recurrentItems = array(
+            'recurrentIds' => array(
+                'label' => ITEM_IDS,
+                'value' => $this->getRecurrentItems(),
+                'placeholder' => ITEM_IDS,
+            ),
+        );
+
+        require_once($this->moduleFolder . 'rbkmoney/page_recurrent_items.php');
+    }
+
+    /**
+     * Вывод страницы "Регулярные платежи"
+     */
+    public function recurrent_show()
+    {
+        foreach ($this->getRecurrentPayments() as $payment) {
+            $customer = $this->getCustomer($payment->recurrent_customer_id);
+            $ncUser = new nc_User;
+            $user = $ncUser->get_by_id($customer['user_id']);
+
+            $statuses = array(
+                'ready' => CUSTOMER_READY,
+                'unready' => CUSTOMER_UNREADY,
+            );
+
+            $this->recurrent[$payment->id] = array(
+                'user_name' => $user['Login'],
+                'user' => "/netcat/admin/user/index.php?phase=4&UserID={$customer['user_id']}",
+                'status' => $statuses[$customer['status']],
+                'amount' => $payment->amount, 2,
+                'name' => $payment->name,
+            );
+        }
+
+        require_once($this->moduleFolder . 'rbkmoney/page_recurrent.php');
+    }
+
+    /**
+     * @param int $recurrentId
+     */
+    public function recurrentDelete($recurrentId)
+    {
+        $this->nc_core->db->query("DELETE FROM `RBKmoney_Recurrent` WHERE `id` = '$recurrentId'");
+
+        nc_print_status(RECURRENT_DELETED, 'ok');
+    }
+
+    public function recurrent_save()
+    {
+        //
+    }
+
+    /**
+     * @return array
+     */
+    protected function getRecurrentPayments()
+    {
+        $result = $this->nc_core->db->get_results("SELECT * FROM `RBKmoney_Recurrent`");
+
+        if (empty($result)) {
+            return array();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $id
+     *
+     * @return array | null
+     */
+    protected function getCustomer($id)
+    {
+        return (array) $this->nc_core->db->get_row("SELECT `user_id`, `status` FROM `RBKmoney_Recurrent_Customers` WHERE `id` = '$id'");
+    }
+
+
+    /**
+     * @return void
+     */
     protected function getForm()
     {
         $nc_core = nc_Core::get_object();
 
         $save = false;
-        if (!empty($nc_core->input->fetch_get_post('act')) && $nc_core->input->fetch_get_post('act') == 'save') {
+
+        $act = $nc_core->input->fetch_get_post('act');
+
+        if (!empty($act) && 'save' === $act) {
             $save = true;
         }
-        $this->form = [
-            'apiKey' => [
+
+        $this->form = array(
+            'apiKey' => array(
                 'label' => API_KEY,
-                'type' => 'input',
+                'type' => 'textarea',
                 'value' => ($save ? $nc_core->input->fetch_get_post('apiKey')
                     : $this->settings['apiKey']),
-                'placeholder' => API_KEY
-            ],
-            'shopId' => [
+                'placeholder' => API_KEY,
+            ),
+            'shopId' => array(
                 'label' => SHOP_ID,
                 'type' => 'input',
                 'value' => ($save ? $nc_core->input->fetch_get_post('shopId')
                     : $this->settings['shopId']),
-                'placeholder' => SHOP_ID
-            ],
-            'failUrl' => [
-                'label' => FAIL_URL,
-                'type' => 'input',
-                'value' => ($save ? $nc_core->input->fetch_get_post('failUrl')
-                    : $this->settings['failUrl']),
-                'placeholder' => FAIL_URL
-            ],
-            'successUrl' => [
+                'placeholder' => SHOP_ID,
+            ),
+            'successUrl' => array(
                 'label' => SUCCESS_URL,
                 'type' => 'input',
                 'value' => ($save ? $nc_core->input->fetch_get_post('successUrl')
                     : $this->settings['successUrl']),
-                'placeholder' => SUCCESS_URL
-            ],
-            'paymentType' => [
+                'placeholder' => SUCCESS_URL,
+            ),
+            'paymentType' => array(
                 'label' => PAYMENT_TYPE,
                 'type' => 'select',
                 'value' => ($save ? $nc_core->input->fetch_get_post('paymentType')
                     : $this->settings['paymentType']),
-                'options' => [PAYMENT_TYPE_HOLD, PAYMENT_TYPE_INSTANTLY],
-                'placeholder' => PAYMENT_TYPE
-            ],
-            'holdExpiration' => [
+                'options' => array(PAYMENT_TYPE_HOLD, PAYMENT_TYPE_INSTANTLY),
+                'placeholder' => PAYMENT_TYPE,
+            ),
+            'holdExpiration' => array(
                 'label' => HOLD_EXPIRATION,
                 'type' => 'select',
                 'value' => ($save ? $nc_core->input->fetch_get_post('holdExpiration')
                     : $this->settings['holdExpiration']),
-                'options' => [EXPIRATION_PAYER, EXPIRATION_SHOP],
-                'placeholder' => HOLD_EXPIRATION
-            ],
-            'cardHolder' => [
+                'options' => array(EXPIRATION_PAYER, EXPIRATION_SHOP),
+                'placeholder' => HOLD_EXPIRATION,
+            ),
+            'holdStatus' => array(
+                'label' => HOLD_STATUS,
+                'type' => 'select',
+                'value' => ($save ? $nc_core->input->fetch_get_post('holdStatus')
+                    : $this->settings['holdStatus']),
+                'options' => array(PROCESSED, PAID),
+                'placeholder' => HOLD_STATUS,
+            ),
+            'cardHolder' => array(
                 'label' => CARD_HOLDER,
                 'type' => 'select',
                 'value' => ($save ? $nc_core->input->fetch_get_post('cardHolder')
                     : $this->settings['cardHolder']),
-                'options' => [true, false],
-                'placeholder' => CARD_HOLDER
-            ],
-            'taxRate' => [
-                'label' => TAX_RATE,
+                'options' => array(SHOW_CARD_HOLDER, NOT_SHOW_CARD_HOLDER),
+                'placeholder' => CARD_HOLDER,
+            ),
+            'fiscalization' => array(
+                'label' => FISCALIZATION,
                 'type' => 'select',
-                'value' => ($save ? $nc_core->input->fetch_get_post('taxRate')
-                    : $this->settings['taxRate']),
-                'options' => TaxMode::VALID_VALUES,
-                'placeholder' => TAX_RATE
-            ],
-        ];
+                'value' => ($save ? $nc_core->input->fetch_get_post('fiscalization')
+                    : $this->settings['fiscalization']),
+                'options' => array(FISCALIZATION_USE, FISCALIZATION_NOT_USE),
+                'placeholder' => FISCALIZATION,
+            )
+        );
     }
 
     /**
@@ -125,17 +514,18 @@ class RbkAdmin
      */
     public function settings_save()
     {
-        $nc_core = nc_core::get_object();
+        $this->getForm();
+        $this->nc_core = nc_core::get_object();
         foreach ($this->form as $key => $v) {
-            $val = $nc_core->input->fetch_get_post($key);
+            $val = $this->nc_core->input->fetch_get_post($key);
             if (!is_array($val)) {
-                $nc_core->set_settings($key, $val, 'rbk');
+                $this->nc_core->set_settings($key, $val, 'rbkmoney');
             } else {
-                $nc_core->set_settings($key, serialize($val), 'rbk');
+                $this->nc_core->set_settings($key, serialize($val), 'rbkmoney');
             }
         }
 
-        $this->settings = $nc_core->get_settings('', 'rbk');
+        $this->settings = $this->nc_core->get_settings('', 'rbkmoney');
     }
 
 }

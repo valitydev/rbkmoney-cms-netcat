@@ -85,7 +85,7 @@ class InvoiceResponse extends RbkDataObject implements ResponseInterface
     /**
      * Корзина с набором позиций продаваемых товаров или услуг
      *
-     * @var Cart | null
+     * @var array | Cart[] | null
      */
     public $cart;
 
@@ -124,7 +124,7 @@ class InvoiceResponse extends RbkDataObject implements ResponseInterface
         $this->amount = $invoice->amount;
         $this->currency = $invoice->currency;
         $this->product = $invoice->product;
-        $this->metadata = new Metadata((array)current($invoice->metadata));
+        $this->metadata = new Metadata((array)$invoice->metadata);
         $this->status = new Status($invoice->status);
 
         if (property_exists($invoice, 'description')) {
@@ -135,9 +135,10 @@ class InvoiceResponse extends RbkDataObject implements ResponseInterface
             $this->invoiceTemplateId = $invoice->invoiceTemplateID;
         }
 
-
         if (property_exists($invoice, 'cart')) {
-            $this->cart = ResponseHandler::getCart(current($invoice->cart));
+            foreach ($invoice->cart as $cart) {
+                $this->cart[] = ResponseHandler::getCart($cart);
+            }
         }
 
         if (property_exists($invoice, 'reason')) {

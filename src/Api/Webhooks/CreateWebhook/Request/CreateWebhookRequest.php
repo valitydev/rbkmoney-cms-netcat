@@ -9,7 +9,7 @@ use src\Api\Webhooks\WebhookScope;
 class CreateWebhookRequest extends RbkDataObject implements PostRequestInterface
 {
 
-    private const URL = '/processing/webhooks';
+    const PATH = '/processing/webhooks';
 
     /**
      * Область охвата webhook'а, ограничивающая набор типов
@@ -30,7 +30,7 @@ class CreateWebhookRequest extends RbkDataObject implements PostRequestInterface
      * @param WebhookScope $scope
      * @param string       $url
      */
-    public function __construct(WebhookScope $scope, string $url)
+    public function __construct(WebhookScope $scope, $url)
     {
         $this->scope = $scope;
         $this->url = $url;
@@ -39,20 +39,20 @@ class CreateWebhookRequest extends RbkDataObject implements PostRequestInterface
     /**
      * @return array
      */
-    public function toArray(): array
+    public function toArray()
     {
-        return [
-            'scope' => $this->scope,
+        return array(
+            'scope' => $this->scope->toArray(),
             'url' => $this->url,
-        ];
+        );
     }
 
     /**
      * @return string
      */
-    public function getUrl(): string
+    public function getPath()
     {
-        return self::URL;
+        return self::PATH;
     }
 
 }

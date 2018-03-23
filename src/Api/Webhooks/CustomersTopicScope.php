@@ -10,49 +10,49 @@ class CustomersTopicScope extends WebhookScope
     /**
      * Предмет оповещений
      */
-    public const CUSTOMERS_TOPIC = 'CustomersTopic';
+    const CUSTOMERS_TOPIC = 'CustomersTopic';
 
     /**
      * Плательщик создан
      */
-    public const CUSTOMER_CREATED = 'CustomerCreated';
+    const CUSTOMER_CREATED = 'CustomerCreated';
 
     /**
      * Плательщик удален
      */
-    public const CUSTOMER_DELETED = 'CustomerDeleted';
+    const CUSTOMER_DELETED = 'CustomerDeleted';
 
     /**
      * Плательщик готов
      */
-    public const CUSTOMER_READY = 'CustomerReady';
+    const CUSTOMER_READY = 'CustomerReady';
 
     /**
      * Привязка к плательщику запущена
      */
-    public const CUSTOMER_BINDING_STARTED = 'CustomerBindingStarted';
+    const CUSTOMER_BINDING_STARTED = 'CustomerBindingStarted';
 
     /**
      * Привязка к плательщику успешно завершена
      */
-    public const CUSTOMER_BINDING_SUCCEEDED = 'CustomerBindingSucceeded';
+    const CUSTOMER_BINDING_SUCCEEDED = 'CustomerBindingSucceeded';
 
     /**
      * Привязка к плательщику завершена неудачей
      */
-    public const CUSTOMER_BINDING_FAILED = 'CustomerBindingFailed';
+    const CUSTOMER_BINDING_FAILED = 'CustomerBindingFailed';
 
     /**
      * Допустимые значения типов событий
      */
-    private const EVENT_TYPES = [
+    private $validTypes = array(
         self::CUSTOMER_CREATED,
         self::CUSTOMER_DELETED,
         self::CUSTOMER_READY,
         self::CUSTOMER_BINDING_STARTED,
         self::CUSTOMER_BINDING_SUCCEEDED,
         self::CUSTOMER_BINDING_FAILED,
-    ];
+    );
 
     /**
      * @param string $shopID
@@ -60,12 +60,14 @@ class CustomersTopicScope extends WebhookScope
      *
      * @throws WrongDataException
      */
-    public function __construct(string $shopID, array $eventTypes)
+    public function __construct($shopID, array $eventTypes)
     {
         $this->shopID = $shopID;
         $this->topic = self::CUSTOMERS_TOPIC;
 
-        if (!empty(array_diff($eventTypes, self::EVENT_TYPES))) {
+        $diff = array_diff($eventTypes, $this->validTypes);
+
+        if (!empty($diff)) {
             throw new WrongDataException('Недопустимое значение `eventTypes`');
         }
 

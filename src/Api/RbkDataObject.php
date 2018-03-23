@@ -10,7 +10,7 @@ abstract class RbkDataObject
      *
      * @return bool
      */
-    public function __isset(string $name): bool {
+    public function __isset($name) {
         return property_exists(get_called_class(), $name);
     }
 
@@ -19,7 +19,7 @@ abstract class RbkDataObject
      *
      * @return mixed
      */
-    public function __get(string $name) {
+    public function __get($name) {
         if ($this->__isset($name)) {
             return $this->$name;
         }
@@ -32,7 +32,7 @@ abstract class RbkDataObject
      * @param string $name
      * @param mixed  $value
      */
-    public function __set(string $name, $value) {
+    public function __set($name, $value) {
         // Реализация не предполагается
     }
 

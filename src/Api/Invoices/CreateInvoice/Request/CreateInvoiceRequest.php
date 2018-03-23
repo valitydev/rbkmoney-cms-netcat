@@ -11,7 +11,7 @@ use src\Api\RbkDataObject;
 class CreateInvoiceRequest extends RbkDataObject implements PostRequestInterface
 {
 
-    private const URL = '/processing/invoices';
+    const PATH = '/processing/invoices';
 
     /**
      * Идентификатор магазина
@@ -32,7 +32,7 @@ class CreateInvoiceRequest extends RbkDataObject implements PostRequestInterface
      * Стоимость предлагаемых товаров или услуг, в минорных денежных единицах,
      * например в копейках в случае указания российских рублей в качестве валюты.
      *
-     * @var int
+     * @var int | null
      */
     private $amount;
 
@@ -73,22 +73,31 @@ class CreateInvoiceRequest extends RbkDataObject implements PostRequestInterface
      * @param string   $currency
      * @param string   $product
      * @param Metadata $metadata
-     * @param int      $amount
      */
     public function __construct(
-        string $shopId,
+        $shopId,
         DateTime $endDate,
-        string $currency,
-        string $product,
-        Metadata $metadata,
-        int $amount
+        $currency,
+        $product,
+        Metadata $metadata
     ) {
         $this->shopID = $shopId;
         $this->dueDate = $endDate->format(DATE_ATOM);
-        $this->currency = $currency;
+        $this->currency = (string) $currency;
         $this->product = $product;
         $this->metadata = $metadata;
-        $this->amount = $amount;
+    }
+
+    /**
+     * @param int $amount
+     *
+     * @return CreateInvoiceRequest
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = (int) $amount;
+
+        return $this;
     }
 
     /**
@@ -96,7 +105,7 @@ class CreateInvoiceRequest extends RbkDataObject implements PostRequestInterface
      *
      * @return CreateInvoiceRequest
      */
-    public function setDescription(string $description): self
+    public function setDescription($description)
     {
         $this->description = $description;
 
@@ -108,7 +117,7 @@ class CreateInvoiceRequest extends RbkDataObject implements PostRequestInterface
      *
      * @return CreateInvoiceRequest
      */
-    public function addCart(Cart $cart): self
+    public function addCart(Cart $cart)
     {
         $this->cart[] = $cart;
 
@@ -120,7 +129,7 @@ class CreateInvoiceRequest extends RbkDataObject implements PostRequestInterface
      *
      * @return CreateInvoiceRequest
      */
-    public function addCarts(array $carts): self
+    public function addCarts(array $carts)
     {
         foreach ($carts as $cart) {
             if ($cart instanceof Cart) {
@@ -134,9 +143,9 @@ class CreateInvoiceRequest extends RbkDataObject implements PostRequestInterface
     /**
      * @return array
      */
-    public function toArray(): array
+    public function toArray()
     {
-        $properties = [];
+        $properties = array();
 
         foreach ($this as $property => $value) {
             if (!empty($value)) {
@@ -154,9 +163,9 @@ class CreateInvoiceRequest extends RbkDataObject implements PostRequestInterface
     /**
      * @return string
      */
-    public function getUrl(): string
+    public function getPath()
     {
-        return self::URL;
+        return self::PATH;
     }
 
 }

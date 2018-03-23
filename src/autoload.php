@@ -1,7 +1,7 @@
 <?php
 
 spl_autoload_register(function($name) {
-    $path = preg_replace('/\\\/', '/', dirname(__DIR__) . "/$name.php");
+    $filePath = preg_replace('/\\\/', '/', $name);
 
-    include $path;
+    include dirname(__DIR__) . "/$filePath.php";
 });

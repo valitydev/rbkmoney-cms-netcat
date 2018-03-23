@@ -82,7 +82,7 @@ class WebhookResponse extends RbkDataObject implements ResponseInterface
      *
      * @throws WrongDataException
      */
-    private function getScope(stdClass $scope): WebhookScope
+    private function getScope(stdClass $scope)
     {
         if (InvoicesTopicScope::INVOICES_TOPIC === $scope->topic) {
             return new InvoicesTopicScope($scope->shopID, $scope->eventTypes);

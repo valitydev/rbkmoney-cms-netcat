@@ -1,9 +1,9 @@
 urlDispatcher.addRoutes({
-    'module.test': NETCAT_PATH + 'modules/rbk/admin.php?view=info'
+    'module.rbkmoney': NETCAT_PATH + 'modules/rbkmoney/admin.php?view=info'
 })
-.addPrefixRouter('module.rbk.', function (path, params) {
+.addPrefixRouter('module.rbkmoney.', function (path, params) {
     var view = path.split('.');
-    var url = NETCAT_PATH + "modules/rbk/admin.php?view=" + view[view.length - 1];
+    var url = NETCAT_PATH + "modules/rbkmoney/admin.php?view=" + view[view.length - 1];
     if (params) {
         url += "&id=" + params;
     }

@@ -13,40 +13,40 @@ class TaxMode
     /**
      * Ставка налога 0%
      */
-    public const TAX_0 = '0%';
+    const TAX_0 = '0%';
 
     /**
      * Ставка налога 10%
      */
-    public const TAX_10 = '10%';
+    const TAX_10 = '10%';
 
     /**
      * Ставка налога 18%
      */
-    public const TAX_18 = '18%';
+    const TAX_18 = '18%';
 
     /**
      * Ставка налога 10/110
      */
-    public const TAX_10_110 = '10/110';
+    const TAX_10_110 = '10/110';
 
     /**
      * Ставка налога 18/118
      */
-    public const TAX_18_118 = '18/118';
+    const TAX_18_118 = '18/118';
 
-    private const TYPE = 'InvoiceLineTaxVAT';
+    const TYPE = 'InvoiceLineTaxVAT';
 
     /**
      * Валидные значения ставки налога
      */
-    public const VALID_VALUES = [
+    static $validValues = array(
         self::TAX_0,
         self::TAX_10,
         self::TAX_18,
         self::TAX_10_110,
         self::TAX_18_118,
-    ];
+    );
 
     /**
      * Тип схемы налогообложения
@@ -67,9 +67,9 @@ class TaxMode
      *
      * @throws WrongDataException
      */
-    public function __construct(string $rate)
+    public function __construct($rate)
     {
-        if (!in_array($rate, self::VALID_VALUES)) {
+        if (!in_array($rate, self::$validValues)) {
             throw new WrongDataException('Неверное значение поля `rate`');
         }
 
@@ -79,12 +79,12 @@ class TaxMode
     /**
      * @return array
      */
-    public function toArray(): array
+    public function toArray()
     {
-        return [
+        return array(
             'type' => $this->type,
             'rate' => $this->rate,
-        ];
+        );
     }
 
 }

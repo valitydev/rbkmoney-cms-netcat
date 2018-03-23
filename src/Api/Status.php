@@ -10,24 +10,28 @@ use src\Api\Exceptions\WrongDataException;
 class Status
 {
 
-    public const PENDING = 'pending';
-    public const PROCESSED = 'processed';
-    public const CAPTURED = 'captured';
-    public const CANCELLED = 'cancelled';
-    public const REFUNDED = 'refunded';
-    public const FAILED = 'failed';
+    const STARTED = 'started';
+    const PENDING = 'pending';
+    const PROCESSED = 'processed';
+    const CAPTURED = 'captured';
+    const CHARGED_BACK = 'charged-back';
+    const CANCELLED = 'cancelled';
+    const REFUNDED = 'refunded';
+    const FAILED = 'failed';
 
     /**
-     * Допустимые значения статуса возврата
+     * Допустимые значения статуса платежа
      */
-    private const VALID_VALUES = [
+    private $validValues = array(
+        self::STARTED,
         self::PENDING,
         self::PROCESSED,
         self::CAPTURED,
+        self::CHARGED_BACK,
         self::CANCELLED,
         self::REFUNDED,
         self::FAILED,
-    ];
+    );
 
     /**
      * @var string
@@ -39,9 +43,9 @@ class Status
      *
      * @throws WrongDataException
      */
-    public function __construct(string $value)
+    public function __construct($value)
     {
-        if (!in_array($value, self::VALID_VALUES)) {
+        if (!in_array($value, $this->validValues)) {
             throw new WrongDataException('Неверное значение поля `status`');
         }
 
@@ -51,7 +55,7 @@ class Status
     /**
      * @return string
      */
-    public function getValue(): string
+    public function getValue()
     {
         return $this->value;
     }
