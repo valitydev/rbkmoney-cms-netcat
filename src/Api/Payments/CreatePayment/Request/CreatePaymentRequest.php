@@ -48,7 +48,7 @@ class CreatePaymentRequest extends RbkDataObject implements PostRequestInterface
     public function toArray()
     {
         return array(
-            'flow' => $this->flow,
+            'flow' => $this->flow->toArray(),
             'payer' => $this->payer,
         );
     }

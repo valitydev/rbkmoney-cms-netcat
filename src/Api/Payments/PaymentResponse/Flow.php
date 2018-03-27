@@ -20,4 +20,21 @@ abstract class Flow extends RbkDataObject
      */
     public $type;
 
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $properties = [];
+
+        foreach ($this as $property => $value) {
+            if (is_object($value)) {
+                $properties[$property] = $value->getValue();
+            } elseif (!empty($value)) {
+                $properties[$property] = $value;
+            }
+        }
+
+        return $properties;
+    }
 }
