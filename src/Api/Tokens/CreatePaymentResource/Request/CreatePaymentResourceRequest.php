@@ -3,9 +3,9 @@
 namespace src\Api\Tokens\CreatePaymentResource\Request;
 
 use src\Api\Interfaces\PostRequestInterface;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 
-class CreatePaymentResourceRequest extends RbkDataObject implements PostRequestInterface
+class CreatePaymentResourceRequest extends RBKMoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/payment-resources';
@@ -37,7 +37,7 @@ class CreatePaymentResourceRequest extends RbkDataObject implements PostRequestI
      */
     public function toArray()
     {
-        $properties = array();
+        $properties = [];
 
         foreach ($this as $property => $value) {
             $properties[$property] = $value->toArray();

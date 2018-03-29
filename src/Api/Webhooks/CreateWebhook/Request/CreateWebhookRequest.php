@@ -3,10 +3,10 @@
 namespace src\Api\Webhooks\CreateWebhook\Request;
 
 use src\Api\Interfaces\PostRequestInterface;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Api\Webhooks\WebhookScope;
 
-class CreateWebhookRequest extends RbkDataObject implements PostRequestInterface
+class CreateWebhookRequest extends RBKMoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/webhooks';
@@ -41,10 +41,10 @@ class CreateWebhookRequest extends RbkDataObject implements PostRequestInterface
      */
     public function toArray()
     {
-        return array(
+        return [
             'scope' => $this->scope->toArray(),
             'url' => $this->url,
-        );
+        ];
     }
 
     /**

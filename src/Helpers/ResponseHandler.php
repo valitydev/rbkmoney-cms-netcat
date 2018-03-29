@@ -24,7 +24,7 @@ use src\Api\Payments\PaymentResponse\PaymentToolDetails;
 use stdClass;
 
 /**
- * Обрабатывает ответы Rbk
+ * Обрабатывает ответы RBKMoney
  */
 class ResponseHandler
 {
@@ -76,12 +76,12 @@ class ResponseHandler
             self::getContactInfo($payer->contactInfo)
         );
 
-        if (property_exists($payer, 'paymentToolDetails')) {
-            $resourcePayer->setPaymentToolDetails(self::getPaymentToolDetails($payer->paymentToolDetails));
+        if (property_exists($payer, PROPERTY_PAYMENT_TOOL_DETAILS)) {
+            $resourcePayer->setPaymentToolDetails(self::getPaymentToolDetails($payer->{PROPERTY_PAYMENT_TOOL_DETAILS}));
         }
 
-        if (property_exists($payer, 'clientInfo')) {
-            $resourcePayer->setClientInfo(self::getClientInfo($payer->clientInfo));
+        if (property_exists($payer, PROPERTY_CLIENT_INFO)) {
+            $resourcePayer->setClientInfo(self::getClientInfo($payer->{PROPERTY_CLIENT_INFO}));
         }
 
         return $resourcePayer;
@@ -97,12 +97,12 @@ class ResponseHandler
     {
         $contactInfo = new ContactInfo();
 
-        if (property_exists($info, 'phoneNumber')) {
-            $contactInfo->setPhone($info->phoneNumber);
+        if (property_exists($info, PROPERTY_PHONE_NUMBER)) {
+            $contactInfo->setPhone($info->{PROPERTY_PHONE_NUMBER});
         }
 
-        if (property_exists($info, 'email')) {
-            $contactInfo->setEmail($info->email);
+        if (property_exists($info, PROPERTY_EMAIL)) {
+            $contactInfo->setEmail($info->{PROPERTY_EMAIL});
         }
 
         return $contactInfo;
@@ -138,8 +138,8 @@ class ResponseHandler
     {
         $clientInfo = new ClientInfo($info->fingerprint);
 
-        if (property_exists($info, 'ip')) {
-            $clientInfo->setIp($info->ip);
+        if (property_exists($info, PROPERTY_IP)) {
+            $clientInfo->setIp($info->{PROPERTY_IP});
         }
 
         return $clientInfo;
@@ -160,11 +160,11 @@ class ResponseHandler
             $invoiceCart->price
         );
 
-        if (property_exists($invoiceCart, 'taxMode')) {
-            $cart->setTaxMode(new TaxMode($invoiceCart->taxMode->rate));
+        if (property_exists($invoiceCart, PROPERTY_TAX_MODE)) {
+            $cart->setTaxMode(new TaxMode($invoiceCart->{PROPERTY_TAX_MODE}->rate));
         }
 
-        if (property_exists($invoiceCart, 'cost')) {
+        if (property_exists($invoiceCart, PROPERTY_COST)) {
             $cart->setCost($invoiceCart->cost);
         }
 

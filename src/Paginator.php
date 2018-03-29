@@ -143,7 +143,7 @@ class Paginator
      */
     public function getPages()
     {
-        $pages = array();
+        $pages = [];
 
         if ($this->numPages <= 1) {
             return $pages;
@@ -194,11 +194,11 @@ class Paginator
      */
     private function createPage($pageNum, $isCurrent = false)
     {
-        return array(
+        return [
             'num' => $pageNum,
             'url' => $this->getPageUrl($pageNum),
             'isCurrent' => $isCurrent,
-        );
+        ];
     }
 
     /**
@@ -206,11 +206,11 @@ class Paginator
      */
     private function createPageEllipsis()
     {
-        return array(
+        return [
             'num' => '...',
             'url' => null,
             'isCurrent' => false,
-        );
+        ];
     }
 
 }

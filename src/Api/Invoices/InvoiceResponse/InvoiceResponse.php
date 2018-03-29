@@ -3,19 +3,20 @@
 namespace src\Api\Invoices\InvoiceResponse;
 
 use DateTime;
+use DateTimeZone;
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
 use src\Api\Invoices\CreateInvoice\Cart;
 use src\Api\Metadata;
 use src\Api\Invoices\Status;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Helpers\ResponseHandler;
 use stdClass;
 
 /**
  * Родительский объект ответов с информацией об инвойсе
  */
-class InvoiceResponse extends RbkDataObject implements ResponseInterface
+class InvoiceResponse extends RBKMoneyDataObject implements ResponseInterface
 {
 
     /**
@@ -117,32 +118,36 @@ class InvoiceResponse extends RbkDataObject implements ResponseInterface
      */
     public function __construct(stdClass $invoice)
     {
+        $timeZone = new DateTimeZone(date_default_timezone_get());
+        $createdAt = new DateTime($invoice->createdAt);
+        $endDate = new DateTime($invoice->dueDate);
+
         $this->id = $invoice->id;
         $this->shopId = $invoice->shopID;
-        $this->createdAt = new DateTime($invoice->createdAt);
-        $this->endDate = new DateTime($invoice->dueDate);
+        $this->createdAt = $createdAt->setTimezone($timeZone);
+        $this->endDate = $endDate->setTimezone($timeZone);
         $this->amount = $invoice->amount;
         $this->currency = $invoice->currency;
         $this->product = $invoice->product;
         $this->metadata = new Metadata((array)$invoice->metadata);
         $this->status = new Status($invoice->status);
 
-        if (property_exists($invoice, 'description')) {
-            $this->description = $invoice->description;
+        if (property_exists($invoice, PROPERTY_DESCRIPTION)) {
+            $this->description = $invoice->{PROPERTY_DESCRIPTION};
         }
 
-        if (property_exists($invoice, 'invoiceTemplateID')) {
-            $this->invoiceTemplateId = $invoice->invoiceTemplateID;
+        if (property_exists($invoice, PROPERTY_INVOICE_TEMPLATE_ID)) {
+            $this->invoiceTemplateId = $invoice->{PROPERTY_INVOICE_TEMPLATE_ID};
         }
 
-        if (property_exists($invoice, 'cart')) {
-            foreach ($invoice->cart as $cart) {
+        if (property_exists($invoice, PROPERTY_CART)) {
+            foreach ($invoice->{PROPERTY_CART} as $cart) {
                 $this->cart[] = ResponseHandler::getCart($cart);
             }
         }
 
-        if (property_exists($invoice, 'reason')) {
-            $this->reason = $invoice->reason;
+        if (property_exists($invoice, PROPERTY_REASON)) {
+            $this->reason = $invoice->{PROPERTY_REASON};
         }
     }
 

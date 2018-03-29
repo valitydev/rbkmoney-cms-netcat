@@ -21,18 +21,18 @@ class Client implements ClientInterface
     /**
      * Успешные коды ответов
      */
-    private $successCodes = array(
+    private $successCodes = [
         self::HTTP_OK,
         self::HTTP_CREATED,
         self::HTTP_ACCEPTED,
         self::HTTP_NO_CONTENT,
-    );
+    ];
 
     const CONTENT_TYPE = 'Content-Type: application/json; charset=utf-8';
     const AUTHORIZATION = 'Authorization: Bearer ';
     const REQUEST_ID = 'X-Request-ID: ';
 
-    private $headers = array();
+    private $headers = [];
 
     /**
      * Приватный ключ для доступа к API
@@ -74,11 +74,11 @@ class Client implements ClientInterface
      */
     private function setHeaders()
     {
-        $this->headers = array(
+        $this->headers = [
             self::CONTENT_TYPE,
             self::AUTHORIZATION . $this->apiKey,
             self::REQUEST_ID . $this->shopId,
-        );
+        ];
     }
 
     /**
@@ -91,19 +91,19 @@ class Client implements ClientInterface
      */
     public function sendRequest(RequestInterface $request, $method)
     {
-        $params = array(
+        $params = [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_HTTPHEADER => $this->headers,
-        );
+        ];
 
-        if (ClientInterface::GET === $method) {
+        if (ClientInterface::HTTP_METHOD_GET === $method) {
             if (!($request instanceof GetRequestInterface)) {
-                throw new WrongRequestException('Недопустимое значение Request');
+                throw new WrongRequestException(WRONG_VALUE . ' Request');
             }
-        } elseif (ClientInterface::POST === $method) {
+        } elseif (ClientInterface::HTTP_METHOD_POST === $method) {
             if (!($request instanceof PostRequestInterface)) {
-                throw new WrongRequestException('Недопустимое значение Request');
+                throw new WrongRequestException(WRONG_VALUE . ' Request');
             }
 
             $params[CURLOPT_POSTFIELDS] = json_encode($request->toArray());
@@ -137,7 +137,7 @@ class Client implements ClientInterface
         }
 
         if (false === $result) {
-            throw new RequestException('Ответ от RbkMoney не получен');
+            throw new RequestException(RBKMONEY_RESPONSE_NOT_RECEIVED);
         } elseif (!in_array($responseInfo['http_code'], $this->successCodes)) {
             throw new RequestException($result, $responseInfo['http_code']);
         }

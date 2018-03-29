@@ -5,12 +5,12 @@ namespace src\Api\Customers\CreateCustomer\Request;
 use src\Api\ContactInfo;
 use src\Api\Interfaces\PostRequestInterface;
 use src\Api\Metadata;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 
 /**
  * Создать нового плательщика
  */
-class CreateCustomerRequest extends RbkDataObject implements PostRequestInterface
+class CreateCustomerRequest extends RBKMoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/customers';
@@ -47,13 +47,11 @@ class CreateCustomerRequest extends RbkDataObject implements PostRequestInterfac
      */
     public function toArray()
     {
-        $properties = array();
+        $properties = [];
 
         foreach ($this as $property => $value) {
-            if (is_object($value)) {
-                $properties[$property] = $value->toArray();
-            } else {
-                $properties[$property] = $value;
+            if (!empty($value)) {
+                $properties[$property] = (is_object($value)) ? $value->toArray() : $value;
             }
         }
 

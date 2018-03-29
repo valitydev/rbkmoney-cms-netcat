@@ -2,12 +2,10 @@
 
 namespace src\Exceptions;
 
-use Exception;
-
 /**
- * Выбрасывается в случае, если не получен ответ от Rbk
+ * Выбрасывается в случае, если не получен ответ от RBKmoney
  */
-class RequestException extends Exception
+class RequestException extends RBKMoneyException
 {
 
 }

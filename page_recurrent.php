@@ -1,9 +1,9 @@
 <div>
     <table class="nc-table nc--striped nc--wide">
         <tr>
-            <th><?php echo USER; ?></th>
-            <th><?php echo AMOUNT; ?></th>
-            <th><?php echo PRODUCT; ?></th>
+            <th><?php echo USER_FIELD; ?></th>
+            <th><?php echo AMOUNT_FIELD; ?></th>
+            <th><?php echo PRODUCT_FIELD; ?></th>
             <th><?php echo USER_STATUS; ?></th>
             <th></th>
         </tr>
@@ -19,7 +19,7 @@
                               <input type='hidden' name='view' value='recurrent'>
                               <input type='hidden' name='act' value='recurrentDelete'>
                               <input type='hidden' name='recurrentId' value='$recurrentId'>
-                              <button type='submit' style='height: 30px'>" . DELETE . "</button>
+                              <button type='submit' style='height: 30px'>" . FORM_BUTTON_DELETE . "</button>
                           </form>
                       </td>
                   </tr>";

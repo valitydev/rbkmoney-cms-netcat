@@ -17,11 +17,11 @@ class Status
     /**
      * Допустимые значения статуса возврата
      */
-    private $validValues = array(
+    private $validValues = [
         self::PENDING,
         self::SUCCEEDED,
         self::FAILED,
-    );
+    ];
 
     /**
      * @var string
@@ -36,7 +36,7 @@ class Status
     public function __construct($value)
     {
         if (!in_array($value, $this->validValues)) {
-            throw new WrongDataException('Неверное значение поля `status`');
+            throw new WrongDataException(WRONG_VALUE . ' `status`');
         }
 
         $this->value = $value;

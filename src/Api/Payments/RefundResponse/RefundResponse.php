@@ -3,16 +3,17 @@
 namespace src\Api\Payments\RefundResponse;
 
 use DateTime;
+use DateTimeZone;
 use src\Api\Error;
 use src\Api\Exceptions\WrongDataException;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Helpers\ResponseHandler;
 use stdClass;
 
 /**
  * Объект ответа на запрос возврата указанного платежа
  */
-class RefundResponse extends RbkDataObject
+class RefundResponse extends RBKMoneyDataObject
 {
 
     /**
@@ -53,16 +54,19 @@ class RefundResponse extends RbkDataObject
      */
     public function __construct(stdClass $responseObject)
     {
+        $timeZone = new DateTimeZone(date_default_timezone_get());
+        $createdAt = new DateTime($responseObject->createdAt);
+
         $this->id = $responseObject->id;
-        $this->createdAt = new DateTime($responseObject->createdAt);
+        $this->createdAt = $createdAt->setTimezone($timeZone);
         $this->status = new Status($responseObject->status);
 
-        if (property_exists($responseObject, 'reason')) {
-            $this->reason = $responseObject->reason;
+        if (property_exists($responseObject, PROPERTY_REASON)) {
+            $this->reason = $responseObject->{PROPERTY_REASON};
         }
 
-        if (property_exists($responseObject, 'error')) {
-            $this->error = ResponseHandler::getError($responseObject->error);
+        if (property_exists($responseObject, PROPERTY_ERROR)) {
+            $this->error = ResponseHandler::getError($responseObject->{PROPERTY_ERROR});
         }
     }
 

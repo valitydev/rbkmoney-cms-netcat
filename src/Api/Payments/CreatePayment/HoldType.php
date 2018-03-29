@@ -16,10 +16,10 @@ class HoldType
     /**
      * Массив возможных типов
      */
-    private $validValues = array(
+    private $validValues = [
         self::CANCEL,
         self::CAPTURE,
-    );
+    ];
 
     /**
      * @var string
@@ -34,7 +34,7 @@ class HoldType
     public function __construct($value)
     {
         if (!in_array($value, $this->validValues)) {
-            throw new WrongDataException('Неверное значение поля `onHoldExpiration`');
+            throw new WrongDataException(WRONG_VALUE . ' `onHoldExpiration`');
         }
 
         $this->value = $value;

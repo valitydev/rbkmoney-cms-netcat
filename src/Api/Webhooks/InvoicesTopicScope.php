@@ -65,7 +65,7 @@ class InvoicesTopicScope extends WebhookScope
     /**
      * Допустимые значения типов событий
      */
-    private $validTypes = array(
+    private $validTypes = [
         self::INVOICE_CREATED,
         self::INVOICE_PAID,
         self::INVOICE_CANCELLED,
@@ -76,7 +76,7 @@ class InvoicesTopicScope extends WebhookScope
         self::PAYMENT_CANCELLED,
         self::PAYMENT_REFUNDED,
         self::PAYMENT_FAILED,
-    );
+    ];
 
     /**
      * @param string $shopID
@@ -92,7 +92,7 @@ class InvoicesTopicScope extends WebhookScope
         $diff = array_diff($eventTypes, $this->validTypes);
 
         if (!empty($diff)) {
-            throw new WrongDataException('Недопустимое значение `eventTypes`');
+            throw new WrongDataException(WRONG_VALUE . ' `eventTypes`');
         }
 
         $this->eventTypes = $eventTypes;

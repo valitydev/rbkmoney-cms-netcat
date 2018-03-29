@@ -4,7 +4,7 @@ namespace src\Api;
 
 use src\Api\Exceptions\WrongDataException;
 
-class ContactInfo extends RbkDataObject
+class ContactInfo extends RBKMoneyDataObject
 {
 
     /**
@@ -43,7 +43,7 @@ class ContactInfo extends RbkDataObject
     public function setPhone($phoneNumber)
     {
         if (!preg_match('/^\+\d{4,15}$/', $phoneNumber)) {
-            throw new WrongDataException('Неверное значение поля `phoneNumber`');
+            throw new WrongDataException(WRONG_VALUE . ' `phoneNumber`');
         }
 
         $this->phoneNumber = $phoneNumber;
@@ -56,7 +56,7 @@ class ContactInfo extends RbkDataObject
      */
     public function toArray()
     {
-        $properties = array();
+        $properties = [];
 
         foreach ($this as $property => $value) {
             if (!empty($value)) {

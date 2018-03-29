@@ -16,10 +16,10 @@ class PayerType
     /**
      * Массив возможных типов
      */
-    private $validValues = array(
+    private $validValues = [
         self::CUSTOMER_PAYER,
         self::PAYMENT_RESOURCE_PAYER,
-    );
+    ];
 
     /**
      * @var string
@@ -34,7 +34,7 @@ class PayerType
     public function __construct($value)
     {
         if (!in_array($value, $this->validValues)) {
-            throw new WrongDataException('Неверное значение поля `payerType`');
+            throw new WrongDataException(WRONG_VALUE . ' `payerType`');
         }
 
         $this->value = $value;

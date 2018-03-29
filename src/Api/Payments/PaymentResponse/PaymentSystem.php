@@ -26,7 +26,7 @@ class PaymentSystem
     /**
      * Допустимые значения платежной системы
      */
-    private $validValues = array(
+    private $validValues = [
         self::VISA,
         self::MASTERCARD,
         self::VISAELECTRON,
@@ -39,7 +39,7 @@ class PaymentSystem
         self::JCB,
         self::NSPKMIR,
         self::DISCOVER,
-    );
+    ];
 
     /**
      * @var string
@@ -54,7 +54,7 @@ class PaymentSystem
     public function __construct($value)
     {
         if (!in_array($value, $this->validValues)) {
-            throw new WrongDataException('Неверное значение поля `paymentSystem`');
+            throw new WrongDataException(WRONG_VALUE . ' `paymentSystem`');
         }
 
         $this->value = $value;

@@ -5,12 +5,12 @@ namespace src\Api\Search\SearchPayments\Request;
 use DateTime;
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\GetRequestInterface;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Api\Search\PaymentMethod;
 use src\Api\Status as PaymentStatus;
 use src\Api\Tokens\CreatePaymentResource\Request\TerminalProvider;
 
-class SearchPaymentsRequest extends RbkDataObject implements GetRequestInterface
+class SearchPaymentsRequest extends RBKMoneyDataObject implements GetRequestInterface
 {
 
     const PATH = '/analytics/shops/{shopID}/payments';
@@ -271,7 +271,7 @@ class SearchPaymentsRequest extends RbkDataObject implements GetRequestInterface
     public function setCardNumberMask($cardNumberMask)
     {
         if (!preg_match('/^\d{2,4}$/', $cardNumberMask)) {
-            throw new WrongDataException('Неверное значение поля `cardNumberMask`');
+            throw new WrongDataException(WRONG_VALUE . ' `cardNumberMask`');
         }
 
         $this->cardNumberMask = $cardNumberMask;
@@ -296,7 +296,7 @@ class SearchPaymentsRequest extends RbkDataObject implements GetRequestInterface
      */
     public function getPath()
     {
-        $properties = array();
+        $properties = [];
 
         foreach ($this as $property => $value) {
             if ('shopId' === $property) {

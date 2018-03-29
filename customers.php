@@ -28,7 +28,7 @@ class Customers
      */
     private $ncCore;
 
-    private $currencyMap = array('RUR' => 'RUB');
+    private $currencyMap = ['RUR' => 'RUB'];
 
     /**
      * @param Sender $sender
@@ -61,16 +61,16 @@ class Customers
         $recurrent = $this->ncCore->db->get_results("SELECT `article` FROM `RBKmoney_Recurrent_Items`");
 
         if (empty($recurrent)) {
-            return array();
+            return [];
         }
 
         $result = '';
 
         foreach ($recurrent as $pay) {
-            $result .= "$pay->article\n";
+            $result .= $pay->article . PHP_EOL;
         }
 
-        return explode("\n", trim($result));
+        return explode(PHP_EOL, trim($result));
     }
 
     /**

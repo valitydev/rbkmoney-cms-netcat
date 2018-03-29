@@ -2,9 +2,9 @@
 
 namespace src\Api\Tokens\CreatePaymentResource\Request;
 
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 
-abstract class PaymentTool extends RbkDataObject
+abstract class PaymentTool extends RBKMoneyDataObject
 {
 
     /**
@@ -24,7 +24,7 @@ abstract class PaymentTool extends RbkDataObject
      */
     public function toArray()
     {
-        $properties = array();
+        $properties = [];
 
         foreach ($this as $property => $value) {
             if (!empty($value)) {

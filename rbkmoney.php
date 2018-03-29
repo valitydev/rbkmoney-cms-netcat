@@ -5,15 +5,14 @@ use src\Api\Exceptions\WrongDataException;
 use src\Api\Exceptions\WrongRequestException;
 use src\Api\Invoices\CreateInvoice\Cart;
 use src\Api\Invoices\CreateInvoice\Request\CreateInvoiceRequest;
+use src\Api\Invoices\CreateInvoice\Response\CreateInvoiceResponse;
 use src\Api\Invoices\CreateInvoice\TaxMode;
-use src\Api\Invoices\Status;
 use src\Api\Metadata;
 use src\Api\Payments\CreatePayment\HoldType;
 use src\Api\Payments\CreatePayment\Request\CreatePaymentRequest;
 use src\Api\Payments\CreatePayment\Request\CustomerPayerRequest;
 use src\Api\Payments\CreatePayment\Request\PaymentFlowHoldRequest;
 use src\Api\Payments\CreatePayment\Request\PaymentFlowInstantRequest;
-use src\Api\Status as PaymentStatus;
 use src\Api\Webhooks\CreateWebhook\Request\CreateWebhookRequest;
 use src\Api\Webhooks\CustomersTopicScope;
 use src\Api\Webhooks\GetWebhooks\Request\GetWebhooksRequest;
@@ -26,9 +25,9 @@ use src\Exceptions\RequestException;
 class nc_payment_system_rbkmoney extends nc_payment_system
 {
 
-    protected $accepted_currencies = array('RUB', 'USD', 'EUR');
+    protected $accepted_currencies = ['RUB', 'USD', 'EUR'];
 
-    protected $currency_map = array('RUR' => 'RUB');
+    protected $currency_map = ['RUR' => 'RUB'];
 
     /**
      * @var Sender
@@ -176,11 +175,10 @@ class nc_payment_system_rbkmoney extends nc_payment_system
      */
     private function getHoldType()
     {
-        if (EXPIRATION_PAYER === $this->get_setting('holdExpiration')) {
-            return new HoldType(HoldType::CANCEL);
-        }
+        $holdType = (EXPIRATION_PAYER === $this->get_setting('holdExpiration'))
+            ? HoldType::CANCEL : HoldType::CAPTURE;
 
-        return new HoldType(HoldType::CAPTURE);
+        return new HoldType($holdType);
     }
 
     /**
@@ -224,27 +222,27 @@ class nc_payment_system_rbkmoney extends nc_payment_system
 
                 if (PAID === $holdStatus) {
                     $invoiceStatus = $invoice::STATUS_SUCCESS;
-                    $netshopStatus = 3;
+                    $netshopStatus = NETSHOP_STATUS_SUCCESS;
                 } elseif (PROCESSED === $holdStatus) {
                     $invoiceStatus = $invoice::STATUS_WAITING;
-                    $netshopStatus = 1;
+                    $netshopStatus = NETSHOP_STATUS_WAITING;
                 } else {
                     throw new WrongDataException(ERROR_HOLD_STATUS_IS_NOT_VALID);
                 }
 
-                if (in_array($type, array(
+                if (in_array($type, [
                     InvoicesTopicScope::INVOICE_PAID,
                     InvoicesTopicScope::PAYMENT_CAPTURED,
-                ))) {
+                ])) {
                     $invoice->set('status', $invoice::STATUS_SUCCESS)->save();
-                    $netshopOrder->set('status', 3)->save();
+                    $netshopOrder->set('status', NETSHOP_STATUS_SUCCESS)->save();
 
-                } elseif (in_array($type, array(
+                } elseif (in_array($type, [
                     InvoicesTopicScope::INVOICE_CANCELLED,
                     InvoicesTopicScope::PAYMENT_REFUNDED
-                ))) {
+                ])) {
                     $invoice->set('status', $invoice::STATUS_CANCELLED)->save();
-                    $netshopOrder->set('status', 2)->save();
+                    $netshopOrder->set('status', NETSHOP_STATUS_CANCELLED)->save();
 
                 } elseif (InvoicesTopicScope::PAYMENT_PROCESSED === $type) {
                     $invoice->set('status', $invoiceStatus)->save();
@@ -259,7 +257,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
      *
      * @return string
      */
-    function getAmount($price)
+    private function prepareAmount($price)
     {
         return number_format($price, 2, '', '');
     }
@@ -269,7 +267,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
      *
      * @return string
      */
-    function getTaxSlash($tax)
+    private function getTaxSlash($tax)
     {
         return substr_replace($tax, '/', 2, 0);
     }
@@ -323,7 +321,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
             $this->add_error(NETCAT_MODULE_PAYMENT_ORDER_ID_IS_NULL);
         }
 
-        if (!$this->is_amount_valid($this->getAmount($invoice->get_amount("%0.2F")))) {
+        if (!$this->is_amount_valid($this->prepareAmount($invoice->get_amount("%0.2F")))) {
             $this->add_error(NETCAT_MODULE_PAYMENT_INCORRECT_PAYMENT_AMOUNT);
         }
 
@@ -336,37 +334,26 @@ class nc_payment_system_rbkmoney extends nc_payment_system
     }
 
     /**
-     * @param nc_payment_invoice $invoice
+     * @param nc_payment_invoice $order
+     * @param string             $product
      *
-     * @return void
+     * @return CreateInvoiceResponse
      *
      * @throws Exception
+     * @throws RequestException
+     * @throws WrongDataException
+     * @throws WrongRequestException
+     * @throws nc_record_exception
      */
-    public function execute_payment_request(nc_payment_invoice $invoice)
+    private function createInvoice(nc_payment_invoice $order, $product)
     {
-        global $AUTH_USER_ID;
-
-        $shopId = $this->get_setting('shopId');
-        $endDate = new DateTime();
-        $invoiceId = $invoice->get_id();
-        $product = ORDER_PAYMENT . " №$invoiceId " . nc_core('catalogue')->get_current('Domain');
-        $carts = array();
-
-        $necessaryWebhooks = $this->getNecessaryWebhooks();
-
-        if (!empty($necessaryWebhooks[InvoicesTopicScope::INVOICES_TOPIC])) {
-            $this->createPaymentWebhook(
-                $shopId,
-                $necessaryWebhooks[InvoicesTopicScope::INVOICES_TOPIC]
-            );
-        }
-
         $fiscalization = (FISCALIZATION_USE === $this->get_setting('fiscalization'));
+        $carts = [];
 
         /**
          * @var $item nc_payment_invoice_item
          */
-        foreach ($invoice->get_items() as $item) {
+        foreach ($order->get_items() as $item) {
             $quantity = $item->get('qty');
             $itemName = $item->get('name');
 
@@ -391,51 +378,133 @@ class nc_payment_system_rbkmoney extends nc_payment_system
                 $carts[] = new Cart(
                     "$itemName ($quantity)",
                     $quantity,
-                    $this->getAmount($item->get('item_price')),
+                    $this->prepareAmount($item->get('item_price')),
                     $taxMode
                 );
             }
         }
 
+        $endDate = new DateTime();
+
         $createInvoice = new CreateInvoiceRequest(
-            $shopId,
+            $this->get_setting('shopId'),
             $endDate->add(new DateInterval(INVOICE_LIFETIME_DATE_INTERVAL_SETTING)),
-            $this->get_currency_code($invoice->get_currency()),
+            $this->get_currency_code($order->get_currency()),
             $product,
-            new Metadata(array(
-                'orderId' => $invoiceId,
+            new Metadata([
+                'orderId' => $order->get_id(),
                 'cms' => "Netcat {$this->nc_core->get_edition_name()}",
                 'cms_version' => $this->nc_core->get_full_version_number(),
                 'module' => MODULE_NAME_SETTING,
                 'module_version' => MODULE_VERSION_SETTING,
-            ))
+            ])
         );
 
         if ($fiscalization) {
             $createInvoice->addCarts($carts);
         } else {
-            $createInvoice->setAmount($this->getAmount($invoice->get_amount('%0.2F')));
+            $createInvoice->setAmount($this->prepareAmount($order->get_amount('%0.2F')));
         }
 
-        $invoiceResponse = $this->sender->sendCreateInvoiceRequest($createInvoice);
+        $invoice = $this->sender->sendCreateInvoiceRequest($createInvoice);
 
-        // Создаем рекурентные платежи
-        if (!empty($AUTH_USER_ID)) {
-            if (!empty($necessaryWebhooks[CustomersTopicScope::CUSTOMERS_TOPIC])) {
-                $this->createCustomerWebhook(
-                    $shopId,
-                    $necessaryWebhooks[CustomersTopicScope::CUSTOMERS_TOPIC]
-                );
+        $this->saveInvoice($invoice, $order);
+
+        return $invoice;
+    }
+
+    /**
+     * @param CreateInvoiceResponse $invoice
+     * @param nc_payment_invoice    $order
+     *
+     * @return void
+     */
+    private function saveInvoice(CreateInvoiceResponse $invoice, nc_payment_invoice $order)
+    {
+        $this->nc_core->db->query(
+            "INSERT INTO `RBKmoney_Invoice` (`invoice_id`, `payload`, `end_date`, `order_id`)
+                  VALUES ('$invoice->id', '$invoice->payload', '{$invoice->endDate->format('Y-m-d H:i:s')}', '{$order->get_id()}')"
+        );
+    }
+
+    /**
+     * @param nc_payment_invoice $invoice
+     *
+     * @return array | null
+     */
+    private function getInvoice(nc_payment_invoice $invoice)
+    {
+        return $this->nc_core->db->get_results("SELECT *
+            FROM `RBKmoney_Invoice`
+            WHERE `order_id` = '{$invoice->get_id()}'");
+    }
+
+    /**
+     * @param nc_payment_invoice $invoice
+     *
+     * @return void
+     *
+     * @throws Exception
+     */
+    public function execute_payment_request(nc_payment_invoice $invoice)
+    {
+        global $AUTH_USER_ID;
+
+        $shopId = $this->get_setting('shopId');
+        $orderId = $invoice->get_id();
+        $product = ORDER_PAYMENT . " №$orderId " . nc_core('catalogue')->get_current('Domain');
+
+        $necessaryWebhooks = $this->getNecessaryWebhooks();
+
+        if (!empty($necessaryWebhooks[InvoicesTopicScope::INVOICES_TOPIC])) {
+            $this->createPaymentWebhook(
+                $shopId,
+                $necessaryWebhooks[InvoicesTopicScope::INVOICES_TOPIC]
+            );
+        }
+
+        $rbkMoneyInvoices = $this->getInvoice($invoice);
+
+        // Даем пользователю 5 минут на заполнение даных карты
+        $diff = new DateInterval('PT5M');
+
+        foreach ($rbkMoneyInvoices as $rbkMoneyInvoice) {
+            $endDate = new DateTime($rbkMoneyInvoice->end_date);
+
+            if ($endDate->sub($diff) < new DateTime()) {
+                continue;
             }
-            include dirname(__DIR__) . '/../../rbkmoney/customers.php';
 
-            $customers = new Customers($this->sender);
-            $customer = $customers->createRecurrent($invoice, $AUTH_USER_ID, $invoiceResponse);
+            $payload = $rbkMoneyInvoice->payload;
+            $invoiceId = $rbkMoneyInvoice->invoice_id;
+
+            break;
+        }
+
+        if (empty($payload)) {
+            $invoiceResponse = $this->createInvoice($invoice, $product);
+
+            // Создаем рекурентные платежи
+            if (!empty($AUTH_USER_ID)) {
+                if (!empty($necessaryWebhooks[CustomersTopicScope::CUSTOMERS_TOPIC])) {
+                    $this->createCustomerWebhook(
+                        $shopId,
+                        $necessaryWebhooks[CustomersTopicScope::CUSTOMERS_TOPIC]
+                    );
+                }
+                include dirname(__DIR__) . '/../../rbkmoney/customers.php';
+
+                $customers = new Customers($this->sender);
+                $customer = $customers->createRecurrent($invoice, $AUTH_USER_ID, $invoiceResponse);
+            }
+
+            $payload = $invoiceResponse->payload;
+            $invoiceId = $invoiceResponse->id;
         }
 
         if (empty($customer)) {
-            $out = 'data-invoice-id="' . $invoiceResponse->id . '"
-            data-invoice-access-token="' . $invoiceResponse->payload . '"';
+            $out = 'data-invoice-id="' . $invoiceId . '"
+            data-invoice-access-token="' . $payload . '"';
         } else {
             $out = $customer;
         }
@@ -447,14 +516,15 @@ class nc_payment_system_rbkmoney extends nc_payment_system
             $holdExpiration = 'data-hold-expiration="' . $this->getHoldType()->getValue() . '"';
         }
 
-        $requireCardHolder = (NOT_SHOW_CARD_HOLDER === $this->get_setting('cardHolder'));
+        $requireCardHolder = (NOT_SHOW_PARAMETER === $this->get_setting('cardHolder'));
+        $shadingCvv = (NOT_SHOW_PARAMETER === $this->get_setting('shadingCvv'));
 
         $form = '<form action="' . $this->get_setting('successUrl') . '" name="pay_form" method="GET">
-        <input type="hidden" name="orderId" value="' . $invoiceId . '">
+        <input type="hidden" name="orderId" value="' . $orderId . '">
         <input type="hidden" name="paySystem" value="' . get_class($this) . '">
     <script src="' . RBK_MONEY_CHECKOUT_URL_SETTING . '" class="rbkmoney-checkout"
             data-payment-flow-hold="' . $holdType . '"
-            data-obscure-card-cvv="true"
+            data-obscure-card-cvv="' . $shadingCvv . '"
             data-require-cardholder="'.$requireCardHolder.'"
             ' . $holdExpiration . '
             data-name="' . $product . '"
@@ -504,19 +574,19 @@ class nc_payment_system_rbkmoney extends nc_payment_system
     {
         $webhooks = $this->sender->sendGetWebhooksRequest(new GetWebhooksRequest());
 
-        $statuses = array(
-            InvoicesTopicScope::INVOICES_TOPIC => array(
+        $statuses = [
+            InvoicesTopicScope::INVOICES_TOPIC => [
                 InvoicesTopicScope::INVOICE_PAID,
                 InvoicesTopicScope::PAYMENT_PROCESSED,
                 InvoicesTopicScope::PAYMENT_CAPTURED,
                 InvoicesTopicScope::INVOICE_CANCELLED,
                 InvoicesTopicScope::PAYMENT_REFUNDED,
                 InvoicesTopicScope::PAYMENT_PROCESSED,
-            ),
-            CustomersTopicScope::CUSTOMERS_TOPIC => array(
+            ],
+            CustomersTopicScope::CUSTOMERS_TOPIC => [
                 CustomersTopicScope::CUSTOMER_READY,
-            ),
-        );
+            ],
+        ];
 
         /**
          * @var $webhook WebhookResponse

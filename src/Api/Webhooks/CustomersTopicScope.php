@@ -45,14 +45,14 @@ class CustomersTopicScope extends WebhookScope
     /**
      * Допустимые значения типов событий
      */
-    private $validTypes = array(
+    private $validTypes = [
         self::CUSTOMER_CREATED,
         self::CUSTOMER_DELETED,
         self::CUSTOMER_READY,
         self::CUSTOMER_BINDING_STARTED,
         self::CUSTOMER_BINDING_SUCCEEDED,
         self::CUSTOMER_BINDING_FAILED,
-    );
+    ];
 
     /**
      * @param string $shopID
@@ -68,7 +68,7 @@ class CustomersTopicScope extends WebhookScope
         $diff = array_diff($eventTypes, $this->validTypes);
 
         if (!empty($diff)) {
-            throw new WrongDataException('Недопустимое значение `eventTypes`');
+            throw new WrongDataException(WRONG_VALUE . ' `eventTypes`');
         }
 
         $this->eventTypes = $eventTypes;

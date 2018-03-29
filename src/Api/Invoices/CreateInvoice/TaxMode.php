@@ -40,13 +40,13 @@ class TaxMode
     /**
      * Валидные значения ставки налога
      */
-    static $validValues = array(
+    static $validValues = [
         self::TAX_0,
         self::TAX_10,
         self::TAX_18,
         self::TAX_10_110,
         self::TAX_18_118,
-    );
+    ];
 
     /**
      * Тип схемы налогообложения
@@ -70,7 +70,7 @@ class TaxMode
     public function __construct($rate)
     {
         if (!in_array($rate, self::$validValues)) {
-            throw new WrongDataException('Неверное значение поля `rate`');
+            throw new WrongDataException(WRONG_VALUE . ' `rate`');
         }
 
         $this->rate = $rate;
@@ -81,10 +81,10 @@ class TaxMode
      */
     public function toArray()
     {
-        return array(
+        return [
             'type' => $this->type,
             'rate' => $this->rate,
-        );
+        ];
     }
 
 }

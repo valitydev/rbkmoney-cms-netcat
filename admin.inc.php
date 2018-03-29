@@ -27,7 +27,7 @@ class RbkMoneyAdmin
     /**
      * @var array
      */
-    protected $transactions = array();
+    protected $transactions = [];
 
     /**
      * @var string
@@ -42,17 +42,17 @@ class RbkMoneyAdmin
     /**
      * @var array
      */
-    protected $pages = array();
+    protected $pages = [];
 
     /**
      * @var array
      */
-    protected $recurrent = array();
+    protected $recurrent = [];
 
     /**
      * @var array
      */
-    protected $recurrentItems = array();
+    protected $recurrentItems = [];
 
     /**
      * @var nc_Core
@@ -90,7 +90,7 @@ class RbkMoneyAdmin
         }
 
         foreach ($payments as $payment) {
-            $result .= "$payment->article\n";
+            $result .= $payment->article . PHP_EOL;
         }
 
         return trim($result);
@@ -252,7 +252,7 @@ class RbkMoneyAdmin
 
         $payments = $sender->sendSearchPaymentsRequest($paymentRequest);
 
-        $statuses = array(
+        $statuses = [
             'started' => STATUS_STARTED,
             'processed' => STATUS_PROCESSED,
             'captured' => STATUS_CAPTURED,
@@ -260,7 +260,7 @@ class RbkMoneyAdmin
             'charged back' => STATUS_CHARGED_BACK,
             'refunded' => STATUS_REFUNDED,
             'failed' => STATUS_FAILED,
-        );
+        ];
 
         /**
          * @var $payment Payment
@@ -269,7 +269,7 @@ class RbkMoneyAdmin
             $invoiceRequest = new GetInvoiceByIdRequest($payment->invoiceId);
             $invoice = $sender->sendGetInvoiceByIdRequest($invoiceRequest);
             $metadata = $invoice->metadata->metadata;
-            $this->transactions[] = array(
+            $this->transactions[] = [
                 'orderId' => $metadata['orderId'],
                 'invoiceId' => $invoice->id,
                 'paymentId' => $payment->id,
@@ -277,9 +277,9 @@ class RbkMoneyAdmin
                 'flowStatus' => $payment->flow->type,
                 'paymentStatus' => $payment->status->getValue(),
                 'status' => $statuses[$payment->status->getValue()],
-                'amount' => $payment->amount,
-                'createdAt' => $payment->createdAt->format('Y-m-d H:i:s'),
-            );
+                'amount' => substr_replace($payment->amount, '.', -2, 0),
+                'createdAt' => $payment->createdAt->format(FULL_DATE_FORMAT),
+            ];
         }
 
         $domain = nc_core('catalogue')->get_current('Domain');
@@ -305,7 +305,7 @@ class RbkMoneyAdmin
 
         $ids = array_map(function($value) {
             return trim($value);
-        }, explode("\n", $ids));
+        }, explode(PHP_EOL, $ids));
 
         // Удаляем из массива всё, кроме цифр
         $ids = array_filter($ids, function($value) {
@@ -351,13 +351,13 @@ class RbkMoneyAdmin
     {
         global $UI_CONFIG;
 
-        $this->recurrentItems = array(
-            'recurrentIds' => array(
+        $this->recurrentItems = [
+            'recurrentIds' => [
                 'label' => ITEM_IDS,
                 'value' => $this->getRecurrentItems(),
                 'placeholder' => ITEM_IDS,
-            ),
-        );
+            ],
+        ];
 
         require_once($this->moduleFolder . 'rbkmoney/page_recurrent_items.php');
     }
@@ -372,18 +372,18 @@ class RbkMoneyAdmin
             $ncUser = new nc_User;
             $user = $ncUser->get_by_id($customer['user_id']);
 
-            $statuses = array(
+            $statuses = [
                 'ready' => CUSTOMER_READY,
                 'unready' => CUSTOMER_UNREADY,
-            );
+            ];
 
-            $this->recurrent[$payment->id] = array(
+            $this->recurrent[$payment->id] = [
                 'user_name' => $user['Login'],
                 'user' => "/netcat/admin/user/index.php?phase=4&UserID={$customer['user_id']}",
                 'status' => $statuses[$customer['status']],
                 'amount' => $payment->amount, 2,
                 'name' => $payment->name,
-            );
+            ];
         }
 
         require_once($this->moduleFolder . 'rbkmoney/page_recurrent.php');
@@ -412,7 +412,7 @@ class RbkMoneyAdmin
         $result = $this->nc_core->db->get_results("SELECT * FROM `RBKmoney_Recurrent`");
 
         if (empty($result)) {
-            return array();
+            return [];
         }
 
         return $result;
@@ -444,69 +444,77 @@ class RbkMoneyAdmin
             $save = true;
         }
 
-        $this->form = array(
-            'apiKey' => array(
+        $this->form = [
+            'apiKey' => [
                 'label' => API_KEY,
                 'type' => 'textarea',
                 'value' => ($save ? $nc_core->input->fetch_get_post('apiKey')
                     : $this->settings['apiKey']),
                 'placeholder' => API_KEY,
-            ),
-            'shopId' => array(
+            ],
+            'shopId' => [
                 'label' => SHOP_ID,
                 'type' => 'input',
                 'value' => ($save ? $nc_core->input->fetch_get_post('shopId')
                     : $this->settings['shopId']),
                 'placeholder' => SHOP_ID,
-            ),
-            'successUrl' => array(
+            ],
+            'successUrl' => [
                 'label' => SUCCESS_URL,
                 'type' => 'input',
                 'value' => ($save ? $nc_core->input->fetch_get_post('successUrl')
                     : $this->settings['successUrl']),
                 'placeholder' => SUCCESS_URL,
-            ),
-            'paymentType' => array(
+            ],
+            'paymentType' => [
                 'label' => PAYMENT_TYPE,
                 'type' => 'select',
                 'value' => ($save ? $nc_core->input->fetch_get_post('paymentType')
                     : $this->settings['paymentType']),
-                'options' => array(PAYMENT_TYPE_HOLD, PAYMENT_TYPE_INSTANTLY),
+                'options' => [PAYMENT_TYPE_HOLD, PAYMENT_TYPE_INSTANTLY],
                 'placeholder' => PAYMENT_TYPE,
-            ),
-            'holdExpiration' => array(
+            ],
+            'holdExpiration' => [
                 'label' => HOLD_EXPIRATION,
                 'type' => 'select',
                 'value' => ($save ? $nc_core->input->fetch_get_post('holdExpiration')
                     : $this->settings['holdExpiration']),
-                'options' => array(EXPIRATION_PAYER, EXPIRATION_SHOP),
+                'options' => [EXPIRATION_PAYER, EXPIRATION_SHOP],
                 'placeholder' => HOLD_EXPIRATION,
-            ),
-            'holdStatus' => array(
+            ],
+            'holdStatus' => [
                 'label' => HOLD_STATUS,
                 'type' => 'select',
                 'value' => ($save ? $nc_core->input->fetch_get_post('holdStatus')
                     : $this->settings['holdStatus']),
-                'options' => array(PROCESSED, PAID),
+                'options' => [PROCESSED, PAID],
                 'placeholder' => HOLD_STATUS,
-            ),
-            'cardHolder' => array(
+            ],
+            'cardHolder' => [
                 'label' => CARD_HOLDER,
                 'type' => 'select',
                 'value' => ($save ? $nc_core->input->fetch_get_post('cardHolder')
                     : $this->settings['cardHolder']),
-                'options' => array(SHOW_CARD_HOLDER, NOT_SHOW_CARD_HOLDER),
+                'options' => [SHOW_PARAMETER, NOT_SHOW_PARAMETER],
                 'placeholder' => CARD_HOLDER,
-            ),
-            'fiscalization' => array(
+            ],
+            'shadingCvv' => [
+                'label' => SHADING_CVV,
+                'type' => 'select',
+                'value' => ($save ? $nc_core->input->fetch_get_post('shadingCvv')
+                    : $this->settings['shadingCvv']),
+                'options' => [SHOW_PARAMETER, NOT_SHOW_PARAMETER],
+                'placeholder' => SHADING_CVV,
+            ],
+            'fiscalization' => [
                 'label' => FISCALIZATION,
                 'type' => 'select',
                 'value' => ($save ? $nc_core->input->fetch_get_post('fiscalization')
                     : $this->settings['fiscalization']),
-                'options' => array(FISCALIZATION_USE, FISCALIZATION_NOT_USE),
+                'options' => [FISCALIZATION_USE, FISCALIZATION_NOT_USE],
                 'placeholder' => FISCALIZATION,
-            )
-        );
+            ],
+        ];
     }
 
     /**

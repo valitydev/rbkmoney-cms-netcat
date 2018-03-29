@@ -29,7 +29,7 @@ foreach ($recurrent->getRecurrentPayments() as $payment) {
     try {
         $invoice = $recurrent->createInvoice($payment, $user);
         $recurrent->createPayment($invoice, $customer['customer_id']);
-        echo RECURRENT_SUCCESS . $payment->id;
+        echo RECURRENT_SUCCESS . $payment->id . PHP_EOL;;
     } catch (Exception $exception) {
         echo $exception->getMessage();
     }
@@ -71,7 +71,7 @@ class Recurrent
      */
     public function getRecurrentPayments()
     {
-        return $this->nc_core->db->get_results("SELECT *
+        return $this->nc_core->db->get_results("SELECT r.id, r.amount, r.name, r.message_id, r.sub_class_id, r.currency,  r.vat_rate, r.recurrent_customer_id
           FROM `RBKmoney_Recurrent` r
           JOIN `RBKmoney_Recurrent_Customers` c ON r.recurrent_customer_id = c.id
           WHERE c.status = 'ready'");
@@ -118,43 +118,45 @@ class Recurrent
         $rbkMoney = new nc_payment_system_rbkmoney();
         $ps = nc_payment_factory::create(get_class($rbkMoney));
 
-        $invoice = new nc_payment_invoice(array(
+        $amount = number_format($payment->amount, 2, '.', '');
+
+        $invoice = new nc_payment_invoice([
             'payment_system_id' => $ps->get_id(),
-            'amount' => round($payment->amount, 2),
-            'description' => 'Рекуррентный платеж',
+            'amount' => $amount,
+            'description' => RECURRENT_PAYMENT,
             'currency' => $payment->currency,
             'customer_id' => $user['User_ID'],
             'customer_email' => $user['Email'],
             'customer_name' => $user['Login'],
-        ));
+        ]);
 
         $invoice->save();
         $invoice->set('order_id', $invoice->get_id())->save();
 
-        $invoiceItem = new nc_payment_invoice_item(array(
+        $invoiceItem = new nc_payment_invoice_item([
             'invoice_id' => $invoice->get_id(),
             'operation' => nc_payment::OPERATION_SELL,
             'name' => $payment->name,
             'source_component_id' => $payment->message_id,
             'source_item_id' => $payment->sub_class_id,
-            'item_price' => round($payment->amount, 2),
+            'item_price' => $amount,
             'qty' => 1,
-        ));
+        ]);
         $invoiceItem->save();
 
         $ncNetshop = nc_netshop::get_instance();
         $created = new DateTime();
         $paymentMethod = new nc_netshop_payment_method();
 
-        $order = $ncNetshop->create_order(array(
+        $order = $ncNetshop->create_order([
             'User_ID' => $user['User_ID'],
             'TotalPrice' => $payment->amount,
             'TotalGoods' => 1,
             'PaymentMethod' => $paymentMethod->load_where('name', 'rbkmoney')->get_id(),
-            'Created' => $created->format('Y-m-d H:i:s'),
+            'Created' => $created->format(FULL_DATE_FORMAT),
             'ContactName' => $user['Login'],
             'Email' => $user['Email'],
-        ))->save();
+        ])->save();
 
         $order->set('Priority', $order->get_id())->save();
         $invoice->set('order_source', $order->get_order_source_class())->save();
@@ -179,13 +181,13 @@ class Recurrent
             $endDate->add(new DateInterval(INVOICE_LIFETIME_DATE_INTERVAL_SETTING)),
             $payment->currency,
             $product,
-            new Metadata(array(
+            new Metadata([
                 'orderId' => $invoice->get_id(),
                 'cms' => "Netcat {$this->nc_core->get_edition_name()}",
                 'cms_version' => $this->nc_core->get_full_version_number(),
                 'module' => MODULE_NAME_SETTING,
                 'module_version' => MODULE_VERSION_SETTING,
-            ))
+            ])
         );
 
         if (FISCALIZATION_USE === $this->settings['fiscalization']) {
@@ -203,11 +205,11 @@ class Recurrent
             $createInvoice->addCart(new Cart(
                 "{$invoiceItem->get('name')} ({$invoiceItem->get('qty')})",
                 $invoiceItem->get('qty'),
-                $this->getAmount($invoiceItem->get('item_price')),
+                $this->prepareAmount($invoiceItem->get('item_price')),
                 $taxMode
             ));
         } else {
-            $createInvoice->setAmount($this->getAmount($invoice->get_amount('%0.2F')));
+            $createInvoice->setAmount($this->prepareAmount($invoice->get_amount('%0.2F')));
         }
 
         return $this->sender->sendCreateInvoiceRequest($createInvoice);
@@ -218,7 +220,7 @@ class Recurrent
      *
      * @return string
      */
-    function getAmount($price)
+    private function prepareAmount($price)
     {
         return number_format($price, 2, '', '');
     }
@@ -228,7 +230,7 @@ class Recurrent
      *
      * @return string
      */
-    function getTaxSlash($tax)
+    private function getTaxSlash($tax)
     {
         return substr_replace($tax, '/', 2, 0);
     }

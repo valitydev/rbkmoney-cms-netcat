@@ -5,10 +5,10 @@ namespace src\Api\Customers\CreateCustomer\Response;
 use src\Api\Customers\CustomerResponse\CustomerResponse;
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use stdClass;
 
-class CreateCustomerResponse extends RbkDataObject implements ResponseInterface
+class CreateCustomerResponse extends RBKMoneyDataObject implements ResponseInterface
 {
 
     /**

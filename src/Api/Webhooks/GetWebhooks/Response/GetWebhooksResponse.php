@@ -4,16 +4,16 @@ namespace src\Api\Webhooks\GetWebhooks\Response;
 
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Api\Webhooks\WebhookResponse\WebhookResponse;
 
-class GetWebhooksResponse extends RbkDataObject implements ResponseInterface
+class GetWebhooksResponse extends RBKMoneyDataObject implements ResponseInterface
 {
 
     /**
      * @var array | WebhookResponse[]
      */
-    public $webhooks = array();
+    public $webhooks = [];
 
     /**
      * @param array $responseObject

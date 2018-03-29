@@ -9,10 +9,10 @@ use src\Exceptions\RequestException;
 interface ClientInterface
 {
 
-    const DELETE = 'DELETE';
-    const POST = 'POST';
-    const GET = 'GET';
-    const PUT = 'PUT';
+    const HTTP_METHOD_DELETE = 'DELETE';
+    const HTTP_METHOD_POST = 'POST';
+    const HTTP_METHOD_GET = 'GET';
+    const HTTP_METHOD_PUT = 'PUT';
 
     /**
      * @param RequestInterface $request

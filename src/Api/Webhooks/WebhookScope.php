@@ -2,9 +2,9 @@
 
 namespace src\Api\Webhooks;
 
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 
-class WebhookScope extends RbkDataObject
+class WebhookScope extends RBKMoneyDataObject
 {
     /**
      * Предмет оповещений
@@ -32,7 +32,7 @@ class WebhookScope extends RbkDataObject
      */
     public function toArray()
     {
-        $properties = array();
+        $properties = [];
 
         foreach ($this as $property => $value) {
             if (!empty($value)) {

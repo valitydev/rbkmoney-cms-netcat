@@ -50,6 +50,15 @@ function InstallThisModule($db)
         UNIQUE KEY `customer_id` (`customer_id`))"
     );
 
+    $db->query("CREATE TABLE `RBKmoney_Invoice` (
+        `id` INT(11) NOT NULL AUTO_INCREMENT,
+        `invoice_id` VARCHAR(100) NOT NULL,
+        `payload` TEXT NOT NULL,
+        `end_date` DATETIME NOT NULL,
+        `order_id` INT(11) NOT NULL,
+        PRIMARY KEY (`id`))"
+    );
+
     $db->query("INSERT INTO `CronTasks`
 			(`Cron_Minutes`, `Cron_Hours`, `Cron_Days`, `Cron_Months`, `Cron_Weekdays`, `Cron_Script_URL`)
 		VALUES

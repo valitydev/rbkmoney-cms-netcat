@@ -6,11 +6,11 @@ use src\Api\ContactInfo;
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
 use src\Api\Metadata;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Helpers\ResponseHandler;
 use stdClass;
 
-class CustomerResponse extends RbkDataObject implements ResponseInterface
+class CustomerResponse extends RBKMoneyDataObject implements ResponseInterface
 {
 
     /**
@@ -60,12 +60,12 @@ class CustomerResponse extends RbkDataObject implements ResponseInterface
         $this->shopId = $customer->shopID;
         $this->metadata = new Metadata((array)$customer->metadata);
 
-        if (property_exists($customer, 'id')) {
-            $this->id = $customer->id;
+        if (property_exists($customer, PROPERTY_ID)) {
+            $this->id = $customer->{PROPERTY_ID};
         }
 
-        if (property_exists($customer, 'status')) {
-            $this->status = new Status($customer->status);
+        if (property_exists($customer, PROPERTY_STATUS)) {
+            $this->status = new Status($customer->{PROPERTY_STATUS});
         }
     }
 

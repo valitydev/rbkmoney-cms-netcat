@@ -2,11 +2,11 @@
 
 namespace src\Api\Payments\CreatePayment;
 
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Api\ContactInfo;
 use src\Api\Interfaces\PayerRequestInterface;
 
-class PaymentResourcePayer extends RbkDataObject implements PayerRequestInterface
+class PaymentResourcePayer extends RBKMoneyDataObject implements PayerRequestInterface
 {
 
     /**

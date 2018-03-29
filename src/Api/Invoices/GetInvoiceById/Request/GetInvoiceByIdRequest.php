@@ -3,12 +3,12 @@
 namespace src\Api\Invoices\GetInvoiceById\Request;
 
 use src\Api\Interfaces\GetRequestInterface;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 
 /**
  * Получить историю указанного инвойса в виде набора событий
  */
-class GetInvoiceByIdRequest extends RbkDataObject implements GetRequestInterface
+class GetInvoiceByIdRequest extends RBKMoneyDataObject implements GetRequestInterface
 {
 
     const PATH = '/processing/invoices/{invoiceID}';

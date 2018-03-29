@@ -3,12 +3,12 @@
 namespace src\Api\Payments\CreateRefund\Request;
 
 use src\Api\Interfaces\PostRequestInterface;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 
 /**
  * Запрос на возврат указанного платежа
  */
-class CreateRefundRequest extends RbkDataObject implements PostRequestInterface
+class CreateRefundRequest extends RBKMoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/invoices/{invoiceID}/payments/{paymentID}/refunds';
@@ -45,9 +45,9 @@ class CreateRefundRequest extends RbkDataObject implements PostRequestInterface
      */
     public function toArray()
     {
-        return array(
+        return [
             'reason' => $this->reason,
-        );
+        ];
     }
 
     /**

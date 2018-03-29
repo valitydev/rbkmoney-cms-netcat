@@ -6,11 +6,11 @@ use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
 use src\Api\Payments\PaymentResponse\ClientInfo;
 use src\Api\Payments\PaymentResponse\PaymentToolDetails;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Helpers\ResponseHandler;
 use stdClass;
 
-class CreatePaymentResourceResponse extends RbkDataObject implements ResponseInterface
+class CreatePaymentResourceResponse extends RBKMoneyDataObject implements ResponseInterface
 {
 
     /**
@@ -51,12 +51,12 @@ class CreatePaymentResourceResponse extends RbkDataObject implements ResponseInt
         $this->paymentToolToken = $token->paymentToolToken;
         $this->paymentSession = $token->paymentSession;
 
-        if (property_exists($token, 'paymentTool')) {
-            $this->paymentToolDetails = ResponseHandler::getPaymentToolDetails($token->paymentTool);
+        if (property_exists($token, PROPERTY_PAYMENT_TOOL)) {
+            $this->paymentToolDetails = ResponseHandler::getPaymentToolDetails($token->{PROPERTY_PAYMENT_TOOL});
         }
 
-        if (property_exists($token, 'clientInfo')) {
-            $this->paymentToolDetails = ResponseHandler::getClientInfo($token->clientInfo);
+        if (property_exists($token, PROPERTY_CLIENT_INFO)) {
+            $this->paymentToolDetails = ResponseHandler::getClientInfo($token->{PROPERTY_CLIENT_INFO});
         }
     }
 

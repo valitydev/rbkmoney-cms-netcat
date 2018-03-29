@@ -3,10 +3,11 @@
 namespace src\Api\Payments\PaymentResponse;
 
 use DateTime;
+use DateTimeZone;
 use src\Api\Error;
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Api\Status;
 use src\Helpers\ResponseHandler;
 use stdClass;
@@ -14,7 +15,7 @@ use stdClass;
 /**
  * Родительский объект ответов с информацией о платеже
  */
-class PaymentResponse extends RbkDataObject implements ResponseInterface
+class PaymentResponse extends RBKMoneyDataObject implements ResponseInterface
 {
 
     /**
@@ -80,17 +81,20 @@ class PaymentResponse extends RbkDataObject implements ResponseInterface
      */
     public function __construct(stdClass $responseObject)
     {
+        $timeZone = new DateTimeZone(date_default_timezone_get());
+        $createdAt = new DateTime($responseObject->createdAt);
+
         $this->id = $responseObject->id;
         $this->invoiceId = $responseObject->invoiceID;
-        $this->createdAt = new DateTime($responseObject->createdAt);
+        $this->createdAt = $createdAt->setTimezone($timeZone);
         $this->amount = $responseObject->amount;
         $this->currency = $responseObject->currency;
         $this->flow = ResponseHandler::getFlow($responseObject->flow);
         $this->payer = ResponseHandler::getPayer($responseObject->payer);
         $this->status = new Status($responseObject->status);
 
-        if (property_exists($responseObject, 'error')) {
-            $this->error = ResponseHandler::getError($responseObject->error);
+        if (property_exists($responseObject, PROPERTY_ERROR)) {
+            $this->error = ResponseHandler::getError($responseObject->{PROPERTY_ERROR});
         }
     }
 

@@ -2,12 +2,12 @@
 
 namespace src\Api\Payments\PaymentResponse;
 
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 
 /**
  * Тип платежного средства
  */
-abstract class PaymentToolDetails extends RbkDataObject
+abstract class PaymentToolDetails extends RBKMoneyDataObject
 {
 
     /**

@@ -4,7 +4,7 @@ namespace src\Api\Webhooks\WebhookResponse;
 
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Api\Webhooks\CustomersTopicScope;
 use src\Api\Webhooks\InvoicesTopicScope;
 use src\Api\Webhooks\WebhookScope;
@@ -13,7 +13,7 @@ use stdClass;
 /**
  * Родительский объект ответов с информацией о вебхуках
  */
-class WebhookResponse extends RbkDataObject implements ResponseInterface
+class WebhookResponse extends RBKMoneyDataObject implements ResponseInterface
 {
 
     /**
@@ -62,16 +62,16 @@ class WebhookResponse extends RbkDataObject implements ResponseInterface
         $this->url = $responseObject->url;
         $this->scope = $this->getScope($responseObject->scope);
 
-        if (property_exists($responseObject, 'id')) {
-            $this->id = $responseObject->id;
+        if (property_exists($responseObject, PROPERTY_ID)) {
+            $this->id = $responseObject->{PROPERTY_ID};
         }
 
-        if (property_exists($responseObject, 'active')) {
-            $this->active = $responseObject->active;
+        if (property_exists($responseObject, PROPERTY_ACTIVE)) {
+            $this->active = $responseObject->{PROPERTY_ACTIVE};
         }
 
-        if (property_exists($responseObject, 'publicKey')) {
-            $this->publicKey = $responseObject->publicKey;
+        if (property_exists($responseObject, PROPERTY_PUBLIC_KEY)) {
+            $this->publicKey = $responseObject->{PROPERTY_PUBLIC_KEY};
         }
     }
 
@@ -90,7 +90,7 @@ class WebhookResponse extends RbkDataObject implements ResponseInterface
             return new CustomersTopicScope($scope->shopID, $scope->eventTypes);
         }
 
-        throw new WrongDataException('Недопустимое значение `topic`');
+        throw new WrongDataException(WRONG_VALUE . ' `topic`');
     }
 
 }

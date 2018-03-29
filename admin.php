@@ -74,9 +74,10 @@ if ('transactions' === $view) {
     $dateTo = new DateTime();
 
     if (empty($date_to)) {
-        $dateTo = $dateTo->setTime(23, 59, 59);
+        $dateTo = new DateTime();
+        $dateTo->setTime(23, 59, 59);
     } else {
-        $dateTo = $dateTo->setTime(23, 59, 59);
+        $dateTo = new DateTime($date_to);
     }
 
     $rbkMoneyAdmin->transactions_show($pageNumber, $dateFrom, $dateTo);

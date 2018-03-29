@@ -6,9 +6,9 @@ use DateTime;
 use src\Api\Interfaces\PostRequestInterface;
 use src\Api\Invoices\CreateInvoice\Cart;
 use src\Api\Metadata;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 
-class CreateInvoiceRequest extends RbkDataObject implements PostRequestInterface
+class CreateInvoiceRequest extends RBKMoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/invoices';
@@ -145,15 +145,11 @@ class CreateInvoiceRequest extends RbkDataObject implements PostRequestInterface
      */
     public function toArray()
     {
-        $properties = array();
+        $properties = [];
 
         foreach ($this as $property => $value) {
             if (!empty($value)) {
-                if (is_object($value)) {
-                    $properties[$property] = $value->toArray();
-                } else {
-                    $properties[$property] = $value;
-                }
+                $properties[$property] = (is_object($value)) ? $value->toArray() : $value;
             }
         }
 

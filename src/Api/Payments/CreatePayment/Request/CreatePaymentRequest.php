@@ -5,9 +5,9 @@ namespace src\Api\Payments\CreatePayment\Request;
 use src\Api\Interfaces\FlowRequestInterface;
 use src\Api\Interfaces\PayerRequestInterface;
 use src\Api\Interfaces\PostRequestInterface;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 
-class CreatePaymentRequest extends RbkDataObject implements PostRequestInterface
+class CreatePaymentRequest extends RBKMoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/invoices/{invoiceID}/payments';
@@ -47,10 +47,10 @@ class CreatePaymentRequest extends RbkDataObject implements PostRequestInterface
      */
     public function toArray()
     {
-        return array(
+        return [
             'flow' => $this->flow->toArray(),
             'payer' => $this->payer,
-        );
+        ];
     }
 
     /**

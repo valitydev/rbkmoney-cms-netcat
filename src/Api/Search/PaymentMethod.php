@@ -16,10 +16,10 @@ class PaymentMethod
     /**
      * Допустимые значения метода оплаты
      */
-    private $validValues = array(
+    private $validValues = [
         self::BANK_CARD,
         self::PAYMENT_TERMINAL,
-    );
+    ];
 
     /**
      * @var string
@@ -34,7 +34,7 @@ class PaymentMethod
     public function __construct($value)
     {
         if (!in_array($value, $this->validValues)) {
-            throw new WrongDataException('Неверное значение поля `paymentMethod`');
+            throw new WrongDataException(WRONG_VALUE . ' `paymentMethod`');
         }
 
         $this->value = $value;

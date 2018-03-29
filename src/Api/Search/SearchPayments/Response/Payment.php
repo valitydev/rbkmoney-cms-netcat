@@ -3,18 +3,19 @@
 namespace src\Api\Search\SearchPayments\Response;
 
 use DateTime;
+use DateTimeZone;
 use src\Api\Error;
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
 use src\Api\Metadata;
 use src\Api\Payments\PaymentResponse\Flow;
 use src\Api\Payments\PaymentResponse\Payer;
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 use src\Api\Status;
 use src\Helpers\ResponseHandler;
 use stdClass;
 
-class Payment extends RbkDataObject implements ResponseInterface
+class Payment extends RBKMoneyDataObject implements ResponseInterface
 {
 
     /**
@@ -106,35 +107,38 @@ class Payment extends RbkDataObject implements ResponseInterface
      */
     public function __construct(stdClass $responseObject)
     {
+        $timeZone = new DateTimeZone(date_default_timezone_get());
+        $createdAt = new DateTime($responseObject->createdAt);
+
         $this->status = new Status($responseObject->status);
         $this->id = $responseObject->id;
         $this->invoiceId = $responseObject->invoiceID;
-        $this->createdAt = new DateTime($responseObject->createdAt);
+        $this->createdAt = $createdAt->setTimezone($timeZone);
         $this->amount = $responseObject->amount;
         $this->currency = $responseObject->currency;
         $this->flow = ResponseHandler::getFlow($responseObject->flow);
         $this->payer = ResponseHandler::getPayer($responseObject->payer);
 
-        if (property_exists($responseObject, 'error')) {
-            $this->error = ResponseHandler::getError($responseObject->error);
+        if (property_exists($responseObject, PROPERTY_ERROR)) {
+            $this->error = ResponseHandler::getError($responseObject->{PROPERTY_ERROR});
         }
 
-        if (property_exists($responseObject, 'shopID')) {
-            $this->shopId = $responseObject->shopID;
+        if (property_exists($responseObject, PROPERTY_SHOP_ID)) {
+            $this->shopId = $responseObject->{PROPERTY_SHOP_ID};
         }
 
-        if (property_exists($responseObject, 'fee')) {
-            $this->fee = $responseObject->fee;
+        if (property_exists($responseObject, PROPERTY_FEE)) {
+            $this->fee = $responseObject->{PROPERTY_FEE};
         }
 
-        if (property_exists($responseObject, 'geoLocationInfo')) {
-            $location = $responseObject->geoLocationInfo;
+        if (property_exists($responseObject, PROPERTY_GEO_LOCATION_INFO)) {
+            $location = $responseObject->{PROPERTY_GEO_LOCATION_INFO};
             $this->geoLocationInfo = new GeoLocation($location->cityGeoID, $location->countryGeoID);
         }
 
-        if (property_exists($responseObject, 'metadata')) {
-            if (false !== current($responseObject->metadata)) {
-                $this->metadata = new Metadata((array)current($responseObject->metadata));
+        if (property_exists($responseObject, PROPERTY_METADATA)) {
+            if (false !== current($responseObject->{PROPERTY_METADATA})) {
+                $this->metadata = new Metadata((array)current($responseObject->{PROPERTY_METADATA}));
             }
         }
     }

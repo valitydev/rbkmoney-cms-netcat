@@ -54,7 +54,7 @@ class Sender
      */
     public function sendCreateInvoiceRequest(CreateInvoiceRequest $request)
     {
-        $response = $this->client->sendRequest($request, ClientInterface::POST);
+        $response = $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_POST);
 
         return new CreateInvoiceResponse(json_decode($response));
     }
@@ -70,7 +70,7 @@ class Sender
      */
     public function sendCreatePaymentRequest(CreatePaymentRequest $request)
     {
-        $response = $this->client->sendRequest($request, ClientInterface::POST);
+        $response = $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_POST);
 
         return new CreatePaymentResponse(json_decode($response));
     }
@@ -86,7 +86,7 @@ class Sender
      */
     public function sendCreateRefundRequest(CreateRefundRequest $request)
     {
-        $response = $this->client->sendRequest($request, ClientInterface::POST);
+        $response = $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_POST);
 
         return new RefundResponse(json_decode($response));
     }
@@ -102,7 +102,7 @@ class Sender
      */
     public function sendGetInvoiceByIdRequest(GetInvoiceByIdRequest $request)
     {
-        $response = $this->client->sendRequest($request, ClientInterface::GET);
+        $response = $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_GET);
 
         return new GetInvoiceByIdResponse(json_decode($response));
     }
@@ -118,7 +118,7 @@ class Sender
      */
     public function sendCreateWebhookRequest(CreateWebhookRequest $request)
     {
-        $response = $this->client->sendRequest($request, ClientInterface::POST);
+        $response = $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_POST);
 
         return new CreateWebhookResponse(json_decode($response));
     }
@@ -134,7 +134,7 @@ class Sender
      */
     public function sendGetWebhooksRequest(GetWebhooksRequest $request)
     {
-        $response = $this->client->sendRequest($request, ClientInterface::GET);
+        $response = $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_GET);
 
         return new GetWebhooksResponse(json_decode($response));
     }
@@ -149,7 +149,7 @@ class Sender
      */
     public function sendCancelPaymentRequest(CancelPaymentRequest $request)
     {
-        $this->client->sendRequest($request, ClientInterface::POST);
+        $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_POST);
     }
 
     /**
@@ -162,7 +162,7 @@ class Sender
      */
     public function sendCapturePaymentRequest(CapturePaymentRequest $request)
     {
-        $this->client->sendRequest($request, ClientInterface::POST);
+        $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_POST);
     }
 
     /**
@@ -176,7 +176,7 @@ class Sender
      */
     public function sendSearchPaymentsRequest(SearchPaymentsRequest $request)
     {
-        $response = $this->client->sendRequest($request, ClientInterface::GET);
+        $response = $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_GET);
 
         return new SearchPaymentsResponse(json_decode($response));
     }
@@ -191,7 +191,7 @@ class Sender
      * @throws WrongRequestException
      */
     public function sendCreatePaymentResourceRequest(CreatePaymentResourceRequest $request) {
-        $response = $this->client->sendRequest($request, ClientInterface::POST);
+        $response = $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_POST);
 
         return new CreatePaymentResourceResponse(json_decode($response));
     }
@@ -207,7 +207,7 @@ class Sender
      */
     public function sendCreateCustomerRequest(CreateCustomerRequest $request)
     {
-        $response = $this->client->sendRequest($request, ClientInterface::POST);
+        $response = $this->client->sendRequest($request, ClientInterface::HTTP_METHOD_POST);
 
         return new CreateCustomerResponse(json_decode($response));
     }

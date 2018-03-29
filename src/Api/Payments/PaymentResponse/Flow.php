@@ -2,12 +2,12 @@
 
 namespace src\Api\Payments\PaymentResponse;
 
-use src\Api\RbkDataObject;
+use src\Api\RBKMoneyDataObject;
 
 /**
  * Параметры созданного платежа
  */
-abstract class Flow extends RbkDataObject
+abstract class Flow extends RBKMoneyDataObject
 {
 
     const HOLD = 'PaymentFlowHold';
@@ -28,10 +28,8 @@ abstract class Flow extends RbkDataObject
         $properties = [];
 
         foreach ($this as $property => $value) {
-            if (is_object($value)) {
-                $properties[$property] = $value->getValue();
-            } elseif (!empty($value)) {
-                $properties[$property] = $value;
+            if (!empty($value)) {
+                $properties[$property] = (is_object($value)) ? $value->getValue() : $value;
             }
         }
 

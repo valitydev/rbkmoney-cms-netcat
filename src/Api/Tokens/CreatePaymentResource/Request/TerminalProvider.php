@@ -15,9 +15,9 @@ class TerminalProvider
     /**
      * Допустимые значения провайдера платежного терминала
      */
-    private $validValues = array(
+    private $validValues = [
         self::EUROSET,
-    );
+    ];
 
     /**
      * @var string
@@ -32,7 +32,7 @@ class TerminalProvider
     public function __construct($value)
     {
         if (!in_array($value, $this->validValues)) {
-            throw new WrongDataException('Неверное значение поля `terminalProvider`');
+            throw new WrongDataException(WRONG_VALUE . ' `terminalProvider`');
         }
 
         $this->value = $value;

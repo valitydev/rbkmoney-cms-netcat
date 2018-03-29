@@ -1,11 +1,11 @@
-rbk
+rbkmoney
 
 6
 
 5.8
 
 
-RBK
+RBKMoney
 
 
-RBK_DESCRIPTION
+RBKMoney_DESCRIPTION
