@@ -2,9 +2,9 @@
 
 namespace src\Api\Payments\PaymentResponse;
 
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
-abstract class Payer extends RBKMoneyDataObject
+abstract class Payer extends RBKmoneyDataObject
 {
 
     const CUSTOMER_PAYER = 'CustomerPayer';

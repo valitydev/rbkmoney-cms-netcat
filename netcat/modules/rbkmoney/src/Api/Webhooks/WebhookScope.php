@@ -2,9 +2,9 @@
 
 namespace src\Api\Webhooks;
 
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
-class WebhookScope extends RBKMoneyDataObject
+class WebhookScope extends RBKmoneyDataObject
 {
     /**
      * Предмет оповещений

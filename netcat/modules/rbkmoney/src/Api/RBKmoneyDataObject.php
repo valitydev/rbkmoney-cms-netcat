@@ -2,7 +2,7 @@
 
 namespace src\Api;
 
-abstract class RBKMoneyDataObject
+abstract class RBKmoneyDataObject
 {
 
     /**

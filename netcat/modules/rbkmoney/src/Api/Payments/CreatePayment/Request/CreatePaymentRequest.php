@@ -5,9 +5,9 @@ namespace src\Api\Payments\CreatePayment\Request;
 use src\Api\Interfaces\FlowRequestInterface;
 use src\Api\Interfaces\PayerRequestInterface;
 use src\Api\Interfaces\PostRequestInterface;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
-class CreatePaymentRequest extends RBKMoneyDataObject implements PostRequestInterface
+class CreatePaymentRequest extends RBKmoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/invoices/{invoiceID}/payments';

@@ -3,10 +3,10 @@
 namespace src\Api\Webhooks\CreateWebhook\Request;
 
 use src\Api\Interfaces\PostRequestInterface;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 use src\Api\Webhooks\WebhookScope;
 
-class CreateWebhookRequest extends RBKMoneyDataObject implements PostRequestInterface
+class CreateWebhookRequest extends RBKmoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/webhooks';

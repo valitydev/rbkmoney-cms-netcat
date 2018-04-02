@@ -7,7 +7,7 @@ use DateTimeZone;
 use src\Api\Error;
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 use src\Api\Status;
 use src\Helpers\ResponseHandler;
 use stdClass;
@@ -15,7 +15,7 @@ use stdClass;
 /**
  * Родительский объект ответов с информацией о платеже
  */
-class PaymentResponse extends RBKMoneyDataObject implements ResponseInterface
+class PaymentResponse extends RBKmoneyDataObject implements ResponseInterface
 {
 
     /**

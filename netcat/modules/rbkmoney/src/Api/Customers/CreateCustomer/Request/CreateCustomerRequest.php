@@ -5,12 +5,12 @@ namespace src\Api\Customers\CreateCustomer\Request;
 use src\Api\ContactInfo;
 use src\Api\Interfaces\PostRequestInterface;
 use src\Api\Metadata;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
 /**
  * Создать нового плательщика
  */
-class CreateCustomerRequest extends RBKMoneyDataObject implements PostRequestInterface
+class CreateCustomerRequest extends RBKmoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/customers';

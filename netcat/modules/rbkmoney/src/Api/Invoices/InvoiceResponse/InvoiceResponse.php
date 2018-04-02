@@ -9,14 +9,14 @@ use src\Api\Interfaces\ResponseInterface;
 use src\Api\Invoices\CreateInvoice\Cart;
 use src\Api\Metadata;
 use src\Api\Invoices\Status;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 use src\Helpers\ResponseHandler;
 use stdClass;
 
 /**
  * Родительский объект ответов с информацией об инвойсе
  */
-class InvoiceResponse extends RBKMoneyDataObject implements ResponseInterface
+class InvoiceResponse extends RBKmoneyDataObject implements ResponseInterface
 {
 
     /**

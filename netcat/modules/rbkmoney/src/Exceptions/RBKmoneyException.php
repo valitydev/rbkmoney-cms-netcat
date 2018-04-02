@@ -7,7 +7,7 @@ use Exception;
 /**
  * Базовый Exception для RBKmoney
  */
-class RBKMoneyException extends Exception
+class RBKmoneyException extends Exception
 {
 
 }

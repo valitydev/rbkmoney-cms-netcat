@@ -2,12 +2,12 @@
 
 namespace src\Api\Invoices\CreateInvoice;
 
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
 /**
  * Корзина с набором позиций продаваемых товаров или услуг
  */
-class Cart extends RBKMoneyDataObject
+class Cart extends RBKmoneyDataObject
 {
 
     /**

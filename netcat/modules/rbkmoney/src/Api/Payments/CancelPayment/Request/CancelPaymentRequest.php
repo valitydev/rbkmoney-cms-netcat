@@ -3,12 +3,12 @@
 namespace src\Api\Payments\CancelPayment\Request;
 
 use src\Api\Interfaces\PostRequestInterface;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
 /**
  * Отменить указанный платеж
  */
-class CancelPaymentRequest extends RBKMoneyDataObject implements PostRequestInterface
+class CancelPaymentRequest extends RBKmoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/invoices/{invoiceID}/payments/{paymentID}/cancel';

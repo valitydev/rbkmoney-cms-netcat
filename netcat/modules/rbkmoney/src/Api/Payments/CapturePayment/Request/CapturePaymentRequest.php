@@ -3,12 +3,12 @@
 namespace src\Api\Payments\CapturePayment\Request;
 
 use src\Api\Interfaces\PostRequestInterface;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
 /**
  * Подтвердить указанный платеж.
  */
-class CapturePaymentRequest extends RBKMoneyDataObject implements PostRequestInterface
+class CapturePaymentRequest extends RBKmoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/invoices/{invoiceID}/payments/{paymentID}/capture';

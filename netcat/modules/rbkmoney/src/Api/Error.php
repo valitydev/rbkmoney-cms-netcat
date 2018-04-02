@@ -5,7 +5,7 @@ namespace src\Api;
 /**
  * Описание ошибки, возникшей в процессе проведения платежа
  */
-class Error extends RBKMoneyDataObject
+class Error extends RBKmoneyDataObject
 {
 
     /**

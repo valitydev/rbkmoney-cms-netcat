@@ -2,12 +2,12 @@
 
 namespace src\Api\Exceptions;
 
-use src\Exceptions\RBKMoneyException;
+use src\Exceptions\RBKmoneyException;
 
 /**
  * Выбрасывается в случае передачи невалидных данных
  */
-class WrongDataException extends RBKMoneyException
+class WrongDataException extends RBKmoneyException
 {
 
 }

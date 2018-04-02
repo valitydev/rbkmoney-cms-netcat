@@ -63,7 +63,7 @@
 /netcat/modules/rbkmoney/src/Api/Payments/PaymentResponse/PaymentToolDetails.php
 /netcat/modules/rbkmoney/src/Api/Payments/RefundResponse/RefundResponse.php
 /netcat/modules/rbkmoney/src/Api/Payments/RefundResponse/Status.php
-/netcat/modules/rbkmoney/src/Api/RBKMoneyDataObject.php
+/netcat/modules/rbkmoney/src/Api/RBKmoney.php
 /netcat/modules/rbkmoney/src/Api/Search/PaymentMethod.php
 /netcat/modules/rbkmoney/src/Api/Search/SearchPayments/Request/SearchPaymentsRequest.php
 /netcat/modules/rbkmoney/src/Api/Search/SearchPayments/Response/GeoLocation.php
@@ -88,7 +88,7 @@
 /netcat/modules/rbkmoney/src/Api/Webhooks/WebhookScope.php
 /netcat/modules/rbkmoney/src/Client/Client.php
 /netcat/modules/rbkmoney/src/Client/Sender.php
-/netcat/modules/rbkmoney/src/Exceptions/RBKMoneyException.php
+/netcat/modules/rbkmoney/src/Exceptions/RBKmoneyException.php
 /netcat/modules/rbkmoney/src/Exceptions/RequestException.php
 /netcat/modules/rbkmoney/src/Helpers/ResponseHandler.php
 /netcat/modules/rbkmoney/src/Interfaces/ClientInterface.php

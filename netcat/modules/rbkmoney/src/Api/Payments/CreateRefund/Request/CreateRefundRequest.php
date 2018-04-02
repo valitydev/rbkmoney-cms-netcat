@@ -3,12 +3,12 @@
 namespace src\Api\Payments\CreateRefund\Request;
 
 use src\Api\Interfaces\PostRequestInterface;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
 /**
  * Запрос на возврат указанного платежа
  */
-class CreateRefundRequest extends RBKMoneyDataObject implements PostRequestInterface
+class CreateRefundRequest extends RBKmoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/invoices/{invoiceID}/payments/{paymentID}/refunds';

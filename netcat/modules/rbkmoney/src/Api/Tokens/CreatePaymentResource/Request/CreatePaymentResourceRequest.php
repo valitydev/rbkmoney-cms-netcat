@@ -3,9 +3,9 @@
 namespace src\Api\Tokens\CreatePaymentResource\Request;
 
 use src\Api\Interfaces\PostRequestInterface;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
-class CreatePaymentResourceRequest extends RBKMoneyDataObject implements PostRequestInterface
+class CreatePaymentResourceRequest extends RBKmoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/payment-resources';

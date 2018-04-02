@@ -2,9 +2,9 @@
 
 namespace src\Api\Tokens\CreatePaymentResource\Request;
 
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
-abstract class PaymentTool extends RBKMoneyDataObject
+abstract class PaymentTool extends RBKmoneyDataObject
 {
 
     /**

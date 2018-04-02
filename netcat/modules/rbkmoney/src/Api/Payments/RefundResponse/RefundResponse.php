@@ -6,14 +6,14 @@ use DateTime;
 use DateTimeZone;
 use src\Api\Error;
 use src\Api\Exceptions\WrongDataException;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 use src\Helpers\ResponseHandler;
 use stdClass;
 
 /**
  * Объект ответа на запрос возврата указанного платежа
  */
-class RefundResponse extends RBKMoneyDataObject
+class RefundResponse extends RBKmoneyDataObject
 {
 
     /**

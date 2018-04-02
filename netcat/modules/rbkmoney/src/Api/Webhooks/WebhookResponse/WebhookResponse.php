@@ -4,7 +4,7 @@ namespace src\Api\Webhooks\WebhookResponse;
 
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 use src\Api\Webhooks\CustomersTopicScope;
 use src\Api\Webhooks\InvoicesTopicScope;
 use src\Api\Webhooks\WebhookScope;
@@ -13,7 +13,7 @@ use stdClass;
 /**
  * Родительский объект ответов с информацией о вебхуках
  */
-class WebhookResponse extends RBKMoneyDataObject implements ResponseInterface
+class WebhookResponse extends RBKmoneyDataObject implements ResponseInterface
 {
 
     /**

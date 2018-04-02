@@ -6,11 +6,11 @@ use src\Api\ContactInfo;
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
 use src\Api\Metadata;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 use src\Helpers\ResponseHandler;
 use stdClass;
 
-class CustomerResponse extends RBKMoneyDataObject implements ResponseInterface
+class CustomerResponse extends RBKmoneyDataObject implements ResponseInterface
 {
 
     /**

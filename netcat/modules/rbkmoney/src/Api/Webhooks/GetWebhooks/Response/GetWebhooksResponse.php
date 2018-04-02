@@ -4,10 +4,10 @@ namespace src\Api\Webhooks\GetWebhooks\Response;
 
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 use src\Api\Webhooks\WebhookResponse\WebhookResponse;
 
-class GetWebhooksResponse extends RBKMoneyDataObject implements ResponseInterface
+class GetWebhooksResponse extends RBKmoneyDataObject implements ResponseInterface
 {
 
     /**

@@ -3,9 +3,9 @@
 namespace src\Api\Webhooks\GetWebhooks\Request;
 
 use src\Api\Interfaces\GetRequestInterface;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
-class GetWebhooksRequest extends RBKMoneyDataObject implements GetRequestInterface
+class GetWebhooksRequest extends RBKmoneyDataObject implements GetRequestInterface
 {
 
     const PATH = '/processing/webhooks';

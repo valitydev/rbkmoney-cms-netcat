@@ -20,7 +20,7 @@ use src\Api\Webhooks\InvoicesTopicScope;
 use src\Api\Webhooks\WebhookResponse\WebhookResponse;
 use src\Client\Client;
 use src\Client\Sender;
-use src\Exceptions\RBKMoneyException;
+use src\Exceptions\RBKmoneyException;
 use src\Exceptions\RequestException;
 
 class nc_payment_system_rbkmoney extends nc_payment_system
@@ -151,7 +151,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
             } elseif (isset($callback->customer)) {
                 $this->customerCallback($callback->customer);
             }
-        } catch (RBKMoneyException $exception) {
+        } catch (RBKmoneyException $exception) {
             $this->callbackError($exception);
         }
     }
@@ -160,7 +160,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
      * @param RBKmoneyException         $exception
      * @param nc_payment_invoice | null $invoice
      */
-    private function callbackError(RBKMoneyException $exception, nc_payment_invoice $invoice = null) {
+    private function callbackError(RBKmoneyException $exception, nc_payment_invoice $invoice = null) {
         if (!empty($invoice)) {
             $this->on_payment_failure($invoice);
         }

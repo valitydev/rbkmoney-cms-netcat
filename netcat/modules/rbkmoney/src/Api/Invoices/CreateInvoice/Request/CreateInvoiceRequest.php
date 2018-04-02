@@ -6,9 +6,9 @@ use DateTime;
 use src\Api\Interfaces\PostRequestInterface;
 use src\Api\Invoices\CreateInvoice\Cart;
 use src\Api\Metadata;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
-class CreateInvoiceRequest extends RBKMoneyDataObject implements PostRequestInterface
+class CreateInvoiceRequest extends RBKmoneyDataObject implements PostRequestInterface
 {
 
     const PATH = '/processing/invoices';

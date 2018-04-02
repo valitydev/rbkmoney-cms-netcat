@@ -10,12 +10,12 @@ use src\Api\Interfaces\ResponseInterface;
 use src\Api\Metadata;
 use src\Api\Payments\PaymentResponse\Flow;
 use src\Api\Payments\PaymentResponse\Payer;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 use src\Api\Status;
 use src\Helpers\ResponseHandler;
 use stdClass;
 
-class Payment extends RBKMoneyDataObject implements ResponseInterface
+class Payment extends RBKmoneyDataObject implements ResponseInterface
 {
 
     /**

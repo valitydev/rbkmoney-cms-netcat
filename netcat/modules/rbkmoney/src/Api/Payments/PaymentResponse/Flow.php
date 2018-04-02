@@ -2,12 +2,12 @@
 
 namespace src\Api\Payments\PaymentResponse;
 
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
 /**
  * Параметры созданного платежа
  */
-abstract class Flow extends RBKMoneyDataObject
+abstract class Flow extends RBKmoneyDataObject
 {
 
     const HOLD = 'PaymentFlowHold';

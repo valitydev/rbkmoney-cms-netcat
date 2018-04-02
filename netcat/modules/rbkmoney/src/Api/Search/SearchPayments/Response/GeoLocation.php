@@ -2,12 +2,12 @@
 
 namespace src\Api\Search\SearchPayments\Response;
 
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 
 /**
  * Информация о геопозиции
  */
-class GeoLocation extends RBKMoneyDataObject
+class GeoLocation extends RBKmoneyDataObject
 {
 
     /**

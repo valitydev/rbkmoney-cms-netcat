@@ -6,11 +6,11 @@ use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\ResponseInterface;
 use src\Api\Payments\PaymentResponse\ClientInfo;
 use src\Api\Payments\PaymentResponse\PaymentToolDetails;
-use src\Api\RBKMoneyDataObject;
+use src\Api\RBKmoneyDataObject;
 use src\Helpers\ResponseHandler;
 use stdClass;
 
-class CreatePaymentResourceResponse extends RBKMoneyDataObject implements ResponseInterface
+class CreatePaymentResourceResponse extends RBKmoneyDataObject implements ResponseInterface
 {
 
     /**

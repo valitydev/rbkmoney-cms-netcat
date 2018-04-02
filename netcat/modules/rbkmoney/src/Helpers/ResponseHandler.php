@@ -24,7 +24,7 @@ use src\Api\Payments\PaymentResponse\PaymentToolDetails;
 use stdClass;
 
 /**
- * Обрабатывает ответы RBKMoney
+ * Обрабатывает ответы RBKmoney
  */
 class ResponseHandler
 {

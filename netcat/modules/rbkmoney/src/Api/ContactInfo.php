@@ -4,7 +4,7 @@ namespace src\Api;
 
 use src\Api\Exceptions\WrongDataException;
 
-class ContactInfo extends RBKMoneyDataObject
+class ContactInfo extends RBKmoneyDataObject
 {
 
     /**
