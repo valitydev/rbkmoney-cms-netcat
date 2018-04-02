@@ -1,11 +1,8 @@
 rbkmoney
-
 6
-
 5.8
+0
+RBK_MONEY
 
 
-RBKMoney
-
-
-RBKMoney_DESCRIPTION
+RBK_MONEY

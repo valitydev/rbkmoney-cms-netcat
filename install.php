@@ -4,30 +4,30 @@ $modulePath = $_SERVER['DOCUMENT_ROOT'] . '/rbkmoney/';
 
 include_once($_SERVER['DOCUMENT_ROOT'] . '/vars.inc.php');
 include_once($ROOT_FOLDER . 'connect_io.php');
-include_once($modulePath . "$lang.lang.php");
+include_once(__DIR__ . "/$lang.lang.php");
 
-$db = $nc_core->db;
+InstallThisModule();
 
-InstallThisModule($db);
-
-function InstallThisModule($db)
+function CheckAbilityOfInstallation()
 {
-    $db->query("INSERT INTO `Module` (`Module_Name`, `Keyword`, `Description`,
-      `Parameters`, `Example_URL`, `Help_URL`, `Installed`, `Number`, `Inside_Admin`, `Checked`)
-      VALUES ('RBK_MONEY', 'rbkmoney', 'RBK_MONEY', 'ADMIN_SETTINGS_LOCATION=module.rbkmoney.settings', '', '', 1, '', 1, 1)"
-    );
+    return array('Success'=>1);
+}
 
-    $db->query("INSERT INTO `Classificator_PaymentSystem` (`PaymentSystem_Name`, `PaymentSystem_Priority`, `Value`, `Checked`)
+function InstallThisModule()
+{
+    global $nc_core;
+
+    $nc_core->db->query("INSERT INTO `Classificator_PaymentSystem` (`PaymentSystem_Name`, `PaymentSystem_Priority`, `Value`, `Checked`)
 	VALUES ('RBKmoney', '1', 'nc_payment_system_rbkmoney', '1')"
     );
 
-    $db->query("CREATE TABLE `RBKmoney_Recurrent_Items` (
+    $nc_core->db->query("CREATE TABLE `RBKmoney_Recurrent_Items` (
         `id` INT(11) NOT NULL AUTO_INCREMENT,
         `article` VARCHAR (20) NOT NULL,
         PRIMARY KEY (`id`))"
     );
 
-    $db->query("CREATE TABLE `RBKmoney_Recurrent` (
+    $nc_core->db->query("CREATE TABLE `RBKmoney_Recurrent` (
         `id` INT(11) NOT NULL AUTO_INCREMENT,
         `recurrent_customer_id` INT(10) UNSIGNED NOT NULL,
         `amount` INT(11) NOT NULL,
@@ -40,7 +40,7 @@ function InstallThisModule($db)
         KEY `recurrent_customer` (`recurrent_customer_id`))"
     );
 
-    $db->query("CREATE TABLE `RBKmoney_Recurrent_Customers` (
+    $nc_core->db->query("CREATE TABLE `RBKmoney_Recurrent_Customers` (
         `id` int(11) NOT NULL AUTO_INCREMENT,
         `user_id` int(11) NOT NULL,
         `customer_id` VARCHAR(20) NOT NULL,
@@ -50,7 +50,7 @@ function InstallThisModule($db)
         UNIQUE KEY `customer_id` (`customer_id`))"
     );
 
-    $db->query("CREATE TABLE `RBKmoney_Invoice` (
+    $nc_core->db->query("CREATE TABLE `RBKmoney_Invoice` (
         `id` INT(11) NOT NULL AUTO_INCREMENT,
         `invoice_id` VARCHAR(100) NOT NULL,
         `payload` TEXT NOT NULL,
@@ -59,20 +59,19 @@ function InstallThisModule($db)
         PRIMARY KEY (`id`))"
     );
 
-    $db->query("INSERT INTO `CronTasks`
+    $nc_core->db->query("INSERT INTO `CronTasks`
 			(`Cron_Minutes`, `Cron_Hours`, `Cron_Days`, `Cron_Months`, `Cron_Weekdays`, `Cron_Script_URL`)
 		VALUES
       (0, 0, 0, 0, 0, '/netcat/modules/rbkmoney/recurrentCron.php')"
     );
 
-    $db->query("INSERT INTO `Settings`
+    $nc_core->db->query("INSERT INTO `Settings`
 			(`Key`, `Value`, `Module`)
 		VALUES
       ('apiKey', '', 'rbkmoney'),
       ('shopId', '', 'rbkmoney'),
       ('successUrl', 'http://example.ru', 'rbkmoney')"
     );
+
     $result["Success"] = 1;
 }
-
-echo INSTALLATION_SUCCESS;
