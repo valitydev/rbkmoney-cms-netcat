@@ -384,6 +384,7 @@ class RbkMoneyAdmin
                 'status' => $statuses[$customer['status']],
                 'amount' => $payment->amount, 2,
                 'name' => $payment->name,
+                'date' => $payment->date,
             ];
         }
 

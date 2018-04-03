@@ -18,7 +18,7 @@ function InstallThisModule()
     global $nc_core;
 
     $nc_core->db->query("INSERT INTO `Classificator_PaymentSystem` (`PaymentSystem_Name`, `PaymentSystem_Priority`, `Value`, `Checked`)
-	VALUES ('RBKmoney', '1', 'nc_payment_system_rbkmoney', '1')"
+	    VALUES ('RBKmoney', '1', 'nc_payment_system_rbkmoney', '1')"
     );
 
     $nc_core->db->query("CREATE TABLE `RBKmoney_Recurrent_Items` (
@@ -36,6 +36,7 @@ function InstallThisModule()
         `sub_class_id` INT(11) NOT NULL,
         `currency` VARCHAR (5) NOT NULL,
         `vat_rate` VARCHAR(10) NULL,
+        `date` DATETIME NOT NULL,
         PRIMARY KEY (`id`),
         KEY `recurrent_customer` (`recurrent_customer_id`))"
     );

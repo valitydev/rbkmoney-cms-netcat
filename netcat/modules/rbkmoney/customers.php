@@ -87,10 +87,11 @@ class Customers
         $subClassId = $item['sub_class_id'];
         $currency = $item['currency'];
         $vatRate = $item['vat_rate'];
+        $date = $item['date'];
 
         $this->ncCore->db->query(
-            "INSERT INTO `RBKmoney_Recurrent` (`recurrent_customer_id`, `amount`, `name`, `message_id`, `sub_class_id`, `currency`, `vat_rate`)
-                  VALUES ('$recurrentCustomerId', '$amount', '$name', '$messageId', '$subClassId', '$currency', '$vatRate')"
+            "INSERT INTO `RBKmoney_Recurrent` (`recurrent_customer_id`, `amount`, `name`, `message_id`, `sub_class_id`, `currency`, `vat_rate`, `date`)
+                  VALUES ('$recurrentCustomerId', '$amount', '$name', '$messageId', '$subClassId', '$currency', '$vatRate', '{$date->format('Y.m.d H:i:s')}')"
         );
     }
 
@@ -213,6 +214,7 @@ class Customers
                 'sub_class_id' => $item->get('source_item_id'),
                 'currency' => $this->get_currency_code($invoice->get_currency()),
                 'vat_rate' => $item->get('vat_rate'),
+                'date' => new DateTime(),
             );
         }
         $intersections = array_intersect($articles, $this->getRecurrentItems());

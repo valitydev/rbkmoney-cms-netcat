@@ -5,6 +5,7 @@
             <th><?php echo AMOUNT_FIELD; ?></th>
             <th><?php echo PRODUCT_FIELD; ?></th>
             <th><?php echo USER_STATUS; ?></th>
+            <th><?php echo RECURRENT_CREATE_DATE; ?></th>
             <th></th>
         </tr>
         <?php
@@ -14,6 +15,7 @@
                       <td>{$payment['amount']}</td>
                       <td>{$payment['name']}</td>
                       <td>{$payment['status']}</td>
+                      <td>{$payment['date']}</td>
                       <td>
                           <form action='admin.php'>
                               <input type='hidden' name='view' value='recurrent'>
