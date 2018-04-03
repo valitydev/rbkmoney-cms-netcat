@@ -20,7 +20,7 @@ use src\Api\Webhooks\InvoicesTopicScope;
 use src\Api\Webhooks\WebhookResponse\WebhookResponse;
 use src\Client\Client;
 use src\Client\Sender;
-use src\Exceptions\RBKmoneyException;
+use src\Exceptions\RBKMoneyException;
 use src\Exceptions\RequestException;
 
 class nc_payment_system_rbkmoney extends nc_payment_system
@@ -160,10 +160,12 @@ class nc_payment_system_rbkmoney extends nc_payment_system
      * @param RBKmoneyException         $exception
      * @param nc_payment_invoice | null $invoice
      */
-    private function callbackError(RBKmoneyException $exception, nc_payment_invoice $invoice = null) {
+    private function callbackError(RBKmoneyException $exception, nc_payment_invoice $invoice = null)
+    {
         if (!empty($invoice)) {
             $this->on_payment_failure($invoice);
         }
+
         $this->printCallbackResponse($exception);
 
         die;
@@ -172,7 +174,8 @@ class nc_payment_system_rbkmoney extends nc_payment_system
     /**
      * @param RBKmoneyException $exception
      */
-    private function printCallbackResponse(RBKmoneyException $exception) {
+    private function printCallbackResponse(RBKmoneyException $exception)
+    {
         header('Content-Type: application/json', true, $exception->getCode());
 
         echo json_encode(['message' => $exception->getMessage()]);
@@ -399,7 +402,6 @@ class nc_payment_system_rbkmoney extends nc_payment_system
                     $this->add_error('<a href="/">На главную</a>');
                     throw new WrongDataException(ERROR_TAX_RATE_IS_NOT_VALID . $itemName, 400);
                 }
-
                 $carts[] = new Cart(
                     "$itemName ($quantity)",
                     $quantity,
@@ -645,10 +647,10 @@ class nc_payment_system_rbkmoney extends nc_payment_system
                     $webhook->scope->eventTypes
                 );
             }
+        }
 
-            if (empty($statuses)) {
-                nc_Core::get_object()->set_settings('publicKey', $webhook->publicKey, 'rbkmoney');
-            }
+        if (empty($statuses[InvoicesTopicScope::INVOICES_TOPIC]) && empty($statuses[CustomersTopicScope::CUSTOMERS_TOPIC])) {
+            nc_Core::get_object()->set_settings('publicKey', $webhook->publicKey, 'rbkmoney');
         }
 
         return $statuses;
