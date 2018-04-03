@@ -378,6 +378,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
     {
         $fiscalization = (FISCALIZATION_USE === $this->get_setting('fiscalization'));
         $carts = [];
+        $sum = 0;
 
         /**
          * @var $item nc_payment_invoice_item
@@ -385,6 +386,13 @@ class nc_payment_system_rbkmoney extends nc_payment_system
         foreach ($order->get_items() as $item) {
             $quantity = $item->get('qty');
             $itemName = $item->get('name');
+            $price = $item->get('item_price');
+            $sourceItemId = $item->get('source_item_id');
+
+            if ($price < 1 || empty($sourceItemId)) {
+                continue;
+            }
+            $sum += $price;
 
             if ($fiscalization) {
                 $sourceItemId = $item->get('source_item_id');
@@ -402,6 +410,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
                     $this->add_error('<a href="/">На главную</a>');
                     throw new WrongDataException(ERROR_TAX_RATE_IS_NOT_VALID . $itemName, 400);
                 }
+
                 $carts[] = new Cart(
                     "$itemName ($quantity)",
                     $quantity,
@@ -409,6 +418,11 @@ class nc_payment_system_rbkmoney extends nc_payment_system
                     $taxMode
                 );
             }
+        }
+
+        if ($sum === 0) {
+            $this->add_error('<a href="/">На главную</a>');
+            throw new WrongDataException(ERROR_AMOUNT_IS_NOT_VALID, 400);
         }
 
         $endDate = new DateTime();
