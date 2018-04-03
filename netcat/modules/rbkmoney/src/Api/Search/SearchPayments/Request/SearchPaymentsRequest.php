@@ -5,12 +5,12 @@ namespace src\Api\Search\SearchPayments\Request;
 use DateTime;
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Interfaces\GetRequestInterface;
-use src\Api\RBKmoney;
+use src\Api\RBKmoneyDataObject;
 use src\Api\Search\PaymentMethod;
 use src\Api\Status as PaymentStatus;
 use src\Api\Tokens\CreatePaymentResource\Request\TerminalProvider;
 
-class SearchPaymentsRequest extends RBKmoney implements GetRequestInterface
+class SearchPaymentsRequest extends RBKmoneyDataObject implements GetRequestInterface
 {
 
     const PATH = '/analytics/shops/{shopID}/payments';
