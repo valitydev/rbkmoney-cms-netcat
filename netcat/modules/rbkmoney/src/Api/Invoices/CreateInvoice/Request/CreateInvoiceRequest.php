@@ -149,7 +149,15 @@ class CreateInvoiceRequest extends RBKmoneyDataObject implements PostRequestInte
 
         foreach ($this as $property => $value) {
             if (!empty($value)) {
-                $properties[$property] = (is_object($value)) ? $value->toArray() : $value;
+                if (is_array($value)) {
+                    foreach ($value as $cart) {
+                        $properties['cart'][] = $cart->toArray();
+                    }
+                } elseif (is_object($value)) {
+                    $properties[$property] = $value->toArray();
+                } else {
+                    $properties[$property] = $value;
+                }
             }
         }
 

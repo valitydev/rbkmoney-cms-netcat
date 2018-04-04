@@ -3,6 +3,7 @@
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Exceptions\WrongRequestException;
 use src\Api\Invoices\CreateInvoice\Cart;
+use src\Api\Invoices\CreateInvoice\Carts;
 use src\Api\Invoices\CreateInvoice\Request\CreateInvoiceRequest;
 use src\Api\Invoices\CreateInvoice\Response\CreateInvoiceResponse;
 use src\Api\Invoices\CreateInvoice\TaxMode;
@@ -51,6 +52,17 @@ class Recurrent
      * @var Sender
      */
     private $sender;
+
+    /**
+     * @var array
+     */
+    protected $vat_map = [
+        0    => '0%',
+        10   => '10%',
+        18   => '18%',
+        10110   => '10/110',
+        18118   => '18/118',
+    ];
 
     public function __construct()
     {
@@ -190,28 +202,44 @@ class Recurrent
         );
 
         if (FISCALIZATION_USE === $this->settings['fiscalization']) {
-            $tax = $payment->vat_rate;
-            $taxSlash = $this->getTaxSlash($tax);
-
-            if (in_array($taxSlash, TaxMode::$validValues)) {
-                $taxMode = new TaxMode($taxSlash);
-            } elseif (in_array("$tax%", TaxMode::$validValues)) {
-                $taxMode = new TaxMode("$tax%");
-            } else {
-                throw new WrongDataException(ERROR_TAX_RATE_IS_NOT_VALID . $payment->name, 400);
-            }
-
-            $createInvoice->addCart(new Cart(
+            $cart = new Cart(
                 "{$invoiceItem->get('name')} ({$invoiceItem->get('qty')})",
                 $invoiceItem->get('qty'),
-                $this->prepareAmount($invoiceItem->get('item_price')),
-                $taxMode
-            ));
+                $this->prepareAmount($invoiceItem->get('item_price'))
+            );
+            $vat = $payment->vat_rate;
+
+            if (!empty($vat)) {
+                $vatRate = $this->getVatRate($vat);
+
+                if (in_array($vatRate, TaxMode::$validValues)) {
+                    $taxMode = new TaxMode($vatRate);
+                } else {
+                    throw new WrongDataException(ERROR_TAX_RATE_IS_NOT_VALID . $payment->name, 400);
+                }
+                $cart->setTaxMode($taxMode);
+            }
+
+            $createInvoice->addCart($cart);
         } else {
             $createInvoice->setAmount($this->prepareAmount($invoice->get_amount('%0.2F')));
         }
 
         return $this->sender->sendCreateInvoiceRequest($createInvoice);
+    }
+
+    /**
+     * @param $vat_rate
+     *
+     * @return string
+     */
+    public function getVatRate($vat_rate)
+    {
+        if (isset($this->vat_map[$vat_rate])) {
+            return $this->vat_map[$vat_rate];
+        }
+
+        return $vat_rate;
     }
 
     /**
@@ -222,16 +250,6 @@ class Recurrent
     private function prepareAmount($price)
     {
         return number_format($price, 2, '', '');
-    }
-
-    /**
-     * @param string $tax
-     *
-     * @return string
-     */
-    private function getTaxSlash($tax)
-    {
-        return substr_replace($tax, '/', 2, 0);
     }
 
     /**

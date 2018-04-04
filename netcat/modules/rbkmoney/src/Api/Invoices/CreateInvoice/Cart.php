@@ -35,21 +35,18 @@ class Cart extends RBKmoneyDataObject
     /**
      * @var TaxMode | null
      */
-    public $taxMode = null;
+    public $taxMode;
 
     /**
      * @param string         $product
      * @param int            $quantity
      * @param int            $price
-     * @param TaxMode | null $taxMode
      */
-    public function __construct($product, $quantity, $price, $taxMode = null)
+    public function __construct($product, $quantity, $price)
     {
         $this->product = $product;
         $this->quantity = (int) $quantity;
         $this->price = (int) $price;
-
-        $this->taxMode = $taxMode;
     }
 
     /**
@@ -62,6 +59,22 @@ class Cart extends RBKmoneyDataObject
         $this->taxMode = $taxMode;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $properties = [];
+
+        foreach ($this as $property => $value) {
+            if (null !== $value) {
+                $properties[$property] = $value;
+            }
+        }
+
+        return $properties;
     }
 
 }

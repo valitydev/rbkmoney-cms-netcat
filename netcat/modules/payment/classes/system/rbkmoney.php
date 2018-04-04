@@ -403,6 +403,18 @@ class nc_payment_system_rbkmoney extends nc_payment_system
             if ($fiscalization) {
                 $sourceItemId = $item->get('source_item_id');
 
+                $cart = new Cart(
+                    "$itemName ($quantity)",
+                    $quantity,
+                    $this->prepareAmount($item->get('item_price'))
+                );
+
+                if (null === $item->get('vat_rate') && !empty($sourceItemId)) {
+                    $carts[] = $cart;
+
+                    continue;
+                }
+
                 if (empty($sourceItemId)) {
                     $vat = DELIVERY_VAT_SETTING;
                 } else {
@@ -417,12 +429,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
                     throw new WrongDataException(ERROR_TAX_RATE_IS_NOT_VALID . $itemName, 400);
                 }
 
-                $carts[] = new Cart(
-                    "$itemName ($quantity)",
-                    $quantity,
-                    $this->prepareAmount($item->get('item_price')),
-                    $taxMode
-                );
+                $carts[] = $cart->setTaxMode($taxMode);
             }
         }
 
