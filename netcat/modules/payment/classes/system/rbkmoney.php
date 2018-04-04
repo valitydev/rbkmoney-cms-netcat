@@ -147,8 +147,6 @@ class nc_payment_system_rbkmoney extends nc_payment_system
             $callback = json_decode($message);
 
             if (isset($callback->invoice)) {
-                file_put_contents(__DIR__.'/body.txt', $message);
-                file_put_contents(__DIR__.'/header.txt', getenv('HTTP_CONTENT_SIGNATURE'));
                 $this->paymentCallback($callback);
             } elseif (isset($callback->customer)) {
                 $this->customerCallback($callback->customer);
