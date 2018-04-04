@@ -28,6 +28,7 @@ define('ERROR_API_KEY_IS_NOT_VALID', 'Некорректное значение 
 define('ERROR_SUCCESS_URL_IS_NOT_VALID', 'Некорректное значение страницы успешной оплаты');
 define('ERROR_PAYMENT_TYPE_IS_NOT_VALID', 'Некорректное значение типа оплаты');
 define('ERROR_HOLD_STATUS_IS_NOT_VALID', 'Некорректное значение статуса инвойса при холде');
+define('ERROR_AMOUNT_IS_NOT_VALID', 'Некорректное значение суммы платежа');
 define('ERROR_HOLD_EXPIRATION_IS_NOT_VALID', 'Некорректное значение стороны списания средств по окончанию срока холдированния');
 define('ERROR_TAX_RATE_IS_NOT_VALID', 'Неверно указан НДС в товаре: ');
 define('PAYMENT_TYPE_HOLD', 'Холд');
@@ -53,7 +54,7 @@ define('REFUND_CREATE_ERROR', 'Ошибка создания возврата п
 define('USER_FIELD', 'Пользователь');
 define('AMOUNT_FIELD', 'Сумма');
 define('PRODUCT_FIELD', 'Товар');
-define('USER_STATUS', 'Статус пользователя');
+define('RECURRENT_CREATE_DATE', 'Дата создания');
 define('FORM_BUTTON_DELETE', 'Удалить');
 define('FISCALIZATION', 'Фискализация по 54-ФЗ');
 define('FISCALIZATION_USE', 'Использовать');

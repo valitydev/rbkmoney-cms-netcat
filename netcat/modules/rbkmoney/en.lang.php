@@ -54,7 +54,6 @@ define('REFUND_CREATE_ERROR', 'Refund create error');
 define('USER_FIELD', 'User');
 define('AMOUNT_FIELD', 'Amount');
 define('PRODUCT_FIELD', 'Product');
-define('USER_STATUS', 'User status');
 define('RECURRENT_CREATE_DATE', 'Created at');
 define('FORM_BUTTON_DELETE', 'Delete');
 define('FISCALIZATION', 'Fiscalization (54 Federal Law)');

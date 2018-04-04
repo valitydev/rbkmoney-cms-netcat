@@ -4,7 +4,7 @@
             <th><?php echo USER_FIELD; ?></th>
             <th><?php echo AMOUNT_FIELD; ?></th>
             <th><?php echo PRODUCT_FIELD; ?></th>
-            <th><?php echo USER_STATUS; ?></th>
+            <th><?php echo RBK_MONEY_TRANSACTION_STATUS; ?></th>
             <th><?php echo RECURRENT_CREATE_DATE; ?></th>
             <th></th>
         </tr>

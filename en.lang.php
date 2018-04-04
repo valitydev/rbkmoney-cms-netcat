@@ -29,6 +29,7 @@ define('ERROR_HOLD_STATUS_IS_NOT_VALID', 'Invalid value of the `holdStatus` para
 define('ERROR_SUCCESS_URL_IS_NOT_VALID', 'Invalid value of the `successUrl` parameter');
 define('ERROR_PAYMENT_TYPE_IS_NOT_VALID', 'Invalid value of the `paymentType` parameter');
 define('ERROR_HOLD_EXPIRATION_IS_NOT_VALID', 'Invalid value of the `holdExpiration` parameter');
+define('ERROR_AMOUNT_IS_NOT_VALID', 'Invalid value of the `amount` parameter');
 define('ERROR_TAX_RATE_IS_NOT_VALID', 'Invalid value `VAT rate` for product: ');
 define('PAYMENT_TYPE_HOLD', 'Hold');
 define('PAYMENT_TYPE_INSTANTLY', 'Write-off instantly');
@@ -53,7 +54,7 @@ define('REFUND_CREATE_ERROR', 'Refund create error');
 define('USER_FIELD', 'User');
 define('AMOUNT_FIELD', 'Amount');
 define('PRODUCT_FIELD', 'Product');
-define('USER_STATUS', 'User status');
+define('RECURRENT_CREATE_DATE', 'Created at');
 define('FORM_BUTTON_DELETE', 'Delete');
 define('FISCALIZATION', 'Fiscalization (54 Federal Law)');
 define('FISCALIZATION_USE', 'Use');

@@ -71,10 +71,9 @@ class Recurrent
      */
     public function getRecurrentPayments()
     {
-        return $this->nc_core->db->get_results("SELECT r.id, r.amount, r.name, r.message_id, r.sub_class_id, r.currency,  r.vat_rate, r.recurrent_customer_id
-          FROM `RBKmoney_Recurrent` r
-          JOIN `RBKmoney_Recurrent_Customers` c ON r.recurrent_customer_id = c.id
-          WHERE c.status = 'ready'");
+        return $this->nc_core->db->get_results("SELECT * 
+          FROM `RBKmoney_Recurrent`
+          WHERE status = '" . RECURRENT_READY_STATUS . "'");
     }
 
     /**

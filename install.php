@@ -6,8 +6,6 @@ include_once($_SERVER['DOCUMENT_ROOT'] . '/vars.inc.php');
 include_once($ROOT_FOLDER . 'connect_io.php');
 include_once(__DIR__ . "/$lang.lang.php");
 
-InstallThisModule();
-
 function CheckAbilityOfInstallation()
 {
     return array('Success'=>1);
@@ -23,7 +21,7 @@ function InstallThisModule()
 
     $nc_core->db->query("CREATE TABLE `RBKmoney_Recurrent_Items` (
         `id` INT(11) NOT NULL AUTO_INCREMENT,
-        `article` VARCHAR (20) NOT NULL,
+        `article` VARCHAR(20) NOT NULL,
         PRIMARY KEY (`id`))"
     );
 
@@ -34,9 +32,11 @@ function InstallThisModule()
         `name` VARCHAR(250) NOT NULL,
         `message_id` INT(11) NOT NULL,
         `sub_class_id` INT(11) NOT NULL,
-        `currency` VARCHAR (5) NOT NULL,
+        `currency` VARCHAR(5) NOT NULL,
         `vat_rate` VARCHAR(10) NULL,
         `date` DATETIME NOT NULL,
+        `status` VARCHAR(20) NOT NULL,
+        `invoice_id` INT(11) NOT NULL,
         PRIMARY KEY (`id`),
         KEY `recurrent_customer` (`recurrent_customer_id`))"
     );
@@ -74,5 +74,5 @@ function InstallThisModule()
       ('successUrl', 'http://example.ru', 'rbkmoney')"
     );
 
-    $result["Success"] = 1;
+    return array('Success'=>1);
 }

@@ -88,10 +88,26 @@ class Customers
         $currency = $item['currency'];
         $vatRate = $item['vat_rate'];
         $date = $item['date'];
+        $status = $item['status'];
+        $invoiceId = $item['invoice_id'];
 
         $this->ncCore->db->query(
-            "INSERT INTO `RBKmoney_Recurrent` (`recurrent_customer_id`, `amount`, `name`, `message_id`, `sub_class_id`, `currency`, `vat_rate`, `date`)
-                  VALUES ('$recurrentCustomerId', '$amount', '$name', '$messageId', '$subClassId', '$currency', '$vatRate', '{$date->format('Y.m.d H:i:s')}')"
+            "INSERT INTO `RBKmoney_Recurrent` (`recurrent_customer_id`, `amount`, `name`, `message_id`, `sub_class_id`, `currency`, `vat_rate`, `date`, `status`, `invoice_id`)
+                  VALUES ('$recurrentCustomerId', '$amount', '$name', '$messageId', '$subClassId', '$currency', '$vatRate', '{$date->format('Y.m.d H:i:s')}', '$status', '$invoiceId')"
+        );
+    }
+
+    /**
+     * @param string $invoiceId
+     *
+     * @return void
+     */
+    private function setRecurrentReadyStatus($invoiceId)
+    {
+        $this->ncCore->db->query(
+            "UPDATE `RBKmoney_Recurrent`
+                  SET `status` = '" . RECURRENT_READY_STATUS . "'
+                  WHERE `invoice_id` = '$invoiceId'"
         );
     }
 
@@ -215,6 +231,8 @@ class Customers
                 'currency' => $this->get_currency_code($invoice->get_currency()),
                 'vat_rate' => $item->get('vat_rate'),
                 'date' => new DateTime(),
+                'status' => RECURRENT_UNREADY_STATUS,
+                'invoice_id' => $invoice->get_id(),
             );
         }
         $intersections = array_intersect($articles, $this->getRecurrentItems());
@@ -237,6 +255,35 @@ class Customers
         }
 
         return $resultCustomer;
+    }
+
+    /**
+     * @param nc_payment_invoice $invoice
+     *
+     * @throws nc_record_exception
+     */
+    public function setRecurrentReadyStatuses(nc_payment_invoice $invoice)
+    {
+        $articles = array();
+
+        /**
+         * @var $item nc_payment_invoice_item
+         */
+        foreach ($invoice->get_items() as $item) {
+            $componentId = $item->get('source_component_id');
+            if (empty($componentId)) {
+                continue;
+            }
+
+            $article = $this->getArticle($item->get('source_component_id'), $item->get('source_item_id'));
+            $articles[$item->get('item_price')] = $article;
+        }
+
+        $intersections = array_intersect($articles, $this->getRecurrentItems());
+
+        if (!empty($intersections)) {
+            $this->setRecurrentReadyStatus($invoice->get_id());
+        }
     }
 
     /**

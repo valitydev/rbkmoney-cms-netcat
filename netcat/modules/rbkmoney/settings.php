@@ -32,3 +32,5 @@ define('PROPERTY_SHOP_ID', 'shopID');
 define('PROPERTY_FEE', 'fee');
 define('PROPERTY_GEO_LOCATION_INFO', 'geoLocationInfo');
 define('PROPERTY_METADATA', 'metadata');
+define('RECURRENT_READY_STATUS', 'ready');
+define('RECURRENT_UNREADY_STATUS', 'unready');

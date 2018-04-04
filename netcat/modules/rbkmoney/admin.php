@@ -13,7 +13,7 @@ require_once ($MODULE_FOLDER . 'rbkmoney/ru.lang.php');
 
 $rbkMoneyAdmin = new RbkMoneyAdmin();
 
-if (!$view) {
+if (!$view || $view === 'rbkmoney.settings') {
     $view = 'settings';
 }
 

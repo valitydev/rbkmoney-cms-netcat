@@ -2,7 +2,6 @@
 
 use src\Api\Exceptions\WrongDataException;
 use src\Api\Exceptions\WrongRequestException;
-use src\Api\Invoices\CreateInvoice\TaxMode;
 use src\Api\Invoices\GetInvoiceById\Request\GetInvoiceByIdRequest;
 use src\Api\Payments\CancelPayment\Request\CancelPaymentRequest;
 use src\Api\Payments\CapturePayment\Request\CapturePaymentRequest;
@@ -12,7 +11,7 @@ use src\Api\Search\SearchPayments\Response\Payment;
 use src\Client\Client;
 use src\Client\Sender;
 use src\Exceptions\RequestException;
-use src\Paginator;
+use src\Helpers\Paginator;
 
 class RbkMoneyAdmin
 {
@@ -153,11 +152,10 @@ class RbkMoneyAdmin
 
         try {
             $sender->sendCapturePaymentRequest($capturePayment);
+            nc_print_status(PAYMENT_CONFIRMED, 'ok');
         } catch (RequestException $exception) {
             nc_print_status(PAYMENT_CAPTURE_ERROR, 'error');
         }
-
-        nc_print_status(PAYMENT_CONFIRMED, 'ok');
     }
 
     /**
@@ -179,11 +177,10 @@ class RbkMoneyAdmin
 
         try {
             $sender->sendCancelPaymentRequest($capturePayment);
+            nc_print_status(PAYMENT_CANCELLED, 'ok');
         } catch (RequestException $exception) {
             nc_print_status(PAYMENT_CANCELLED_ERROR, 'error');
         }
-
-        nc_print_status(PAYMENT_CANCELLED, 'ok');
     }
 
     /**
@@ -206,11 +203,10 @@ class RbkMoneyAdmin
 
         try {
             $sender->sendCreateRefundRequest($capturePayment);
+            nc_print_status(REFUND_CREATED, 'ok');
         } catch (RequestException $exception) {
             nc_print_status(REFUND_CREATE_ERROR, 'error');
         }
-
-        nc_print_status(REFUND_CREATED, 'ok');
     }
 
     /**
@@ -373,15 +369,10 @@ class RbkMoneyAdmin
             $ncUser = new nc_User;
             $user = $ncUser->get_by_id($customer['user_id']);
 
-            $statuses = [
-                'ready' => CUSTOMER_READY,
-                'unready' => CUSTOMER_UNREADY,
-            ];
-
             $this->recurrent[$payment->id] = [
                 'user_name' => $user['Login'],
                 'user' => "/netcat/admin/user/index.php?phase=4&UserID={$customer['user_id']}",
-                'status' => $statuses[$customer['status']],
+                'status' => $payment->status,
                 'amount' => $payment->amount, 2,
                 'name' => $payment->name,
                 'date' => $payment->date,

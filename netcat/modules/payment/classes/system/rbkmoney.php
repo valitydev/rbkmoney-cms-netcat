@@ -147,6 +147,8 @@ class nc_payment_system_rbkmoney extends nc_payment_system
             $callback = json_decode($message);
 
             if (isset($callback->invoice)) {
+                file_put_contents(__DIR__.'/body.txt', $message);
+                file_put_contents(__DIR__.'/header.txt', getenv('HTTP_CONTENT_SIGNATURE'));
                 $this->paymentCallback($callback);
             } elseif (isset($callback->customer)) {
                 $this->customerCallback($callback->customer);
@@ -166,7 +168,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
             $this->on_payment_failure($invoice);
         }
 
-        $this->printCallbackResponse($exception);
+        $this->printCallbackErrorResponse($exception);
 
         die;
     }
@@ -174,11 +176,11 @@ class nc_payment_system_rbkmoney extends nc_payment_system
     /**
      * @param RBKmoneyException $exception
      */
-    private function printCallbackResponse(RBKmoneyException $exception)
+    private function printCallbackErrorResponse(RBKmoneyException $exception)
     {
         header('Content-Type: application/json', true, $exception->getCode());
 
-        echo json_encode(['message' => $exception->getMessage()]);
+        echo json_encode(['message' => $exception->getMessage()], 256);
     }
 
     /**
@@ -275,6 +277,10 @@ class nc_payment_system_rbkmoney extends nc_payment_system
                 ])) {
                     $invoice->set('status', $invoice::STATUS_SUCCESS)->save();
                     $netshopOrder->set('status', NETSHOP_STATUS_SUCCESS)->save();
+
+                    include dirname(__DIR__) . '/../../rbkmoney/customers.php';
+                    $customers = new Customers($this->sender);
+                    $customers->setRecurrentReadyStatuses($invoice);
 
                 } elseif (in_array($type, [
                     InvoicesTopicScope::INVOICE_CANCELLED,

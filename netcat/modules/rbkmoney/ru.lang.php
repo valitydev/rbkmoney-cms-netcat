@@ -54,7 +54,6 @@ define('REFUND_CREATE_ERROR', 'Ошибка создания возврата п
 define('USER_FIELD', 'Пользователь');
 define('AMOUNT_FIELD', 'Сумма');
 define('PRODUCT_FIELD', 'Товар');
-define('USER_STATUS', 'Статус пользователя');
 define('RECURRENT_CREATE_DATE', 'Дата создания');
 define('FORM_BUTTON_DELETE', 'Удалить');
 define('FISCALIZATION', 'Фискализация по 54-ФЗ');

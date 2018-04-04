@@ -11,7 +11,7 @@
 /netcat/modules/rbkmoney/ru.lang.php
 /netcat/modules/rbkmoney/en.lang.php
 /netcat/modules/rbkmoney/ui_config.php
-/netcat/modules/rbkmoney/url_routes.js.php
+/netcat/modules/rbkmoney/url_routes.js
 /netcat/modules/payment/classes/system/rbkmoney.php
 /netcat/modules/rbkmoney/src/Api/ContactInfo.php
 /netcat/modules/rbkmoney/src/Api/Customers/CreateCustomer/Request/CreateCustomerRequest.php
@@ -88,9 +88,9 @@
 /netcat/modules/rbkmoney/src/Api/Webhooks/WebhookScope.php
 /netcat/modules/rbkmoney/src/Client/Client.php
 /netcat/modules/rbkmoney/src/Client/Sender.php
-/netcat/modules/rbkmoney/src/Exceptions/RBKMoneyException.php
+/netcat/modules/rbkmoney/src/Exceptions/RBKmoneyException.php
 /netcat/modules/rbkmoney/src/Exceptions/RequestException.php
 /netcat/modules/rbkmoney/src/Helpers/ResponseHandler.php
 /netcat/modules/rbkmoney/src/Interfaces/ClientInterface.php
-/netcat/modules/rbkmoney/src/Paginator.php
+/netcat/modules/rbkmoney/src/Helpers/Paginator.php
 /netcat/modules/rbkmoney/src/autoload.php
