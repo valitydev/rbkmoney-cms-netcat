@@ -282,7 +282,8 @@ class nc_payment_system_rbkmoney extends nc_payment_system
 
                 } elseif (in_array($type, [
                     InvoicesTopicScope::INVOICE_CANCELLED,
-                    InvoicesTopicScope::PAYMENT_REFUNDED
+                    InvoicesTopicScope::PAYMENT_CANCELLED,
+                    InvoicesTopicScope::PAYMENT_REFUNDED,
                 ])) {
                     $invoice->set('status', $invoice::STATUS_CANCELLED)->save();
                     $netshopOrder->set('status', NETSHOP_STATUS_CANCELLED)->save();
@@ -647,6 +648,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
                 InvoicesTopicScope::PAYMENT_CAPTURED,
                 InvoicesTopicScope::INVOICE_CANCELLED,
                 InvoicesTopicScope::PAYMENT_REFUNDED,
+                InvoicesTopicScope::PAYMENT_CANCELLED,
                 InvoicesTopicScope::PAYMENT_PROCESSED,
             ],
             CustomersTopicScope::CUSTOMERS_TOPIC => [
