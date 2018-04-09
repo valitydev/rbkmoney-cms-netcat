@@ -47,8 +47,6 @@ class rbkmoney extends nc_payment_system
         0    => '0%',
         10   => '10%',
         18   => '18%',
-        10110   => '10/110',
-        18118   => '18/118',
     ];
 
     public function __construct()

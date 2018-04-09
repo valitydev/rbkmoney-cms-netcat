@@ -25,16 +25,6 @@ class TaxMode
      */
     const TAX_18 = '18%';
 
-    /**
-     * Ставка налога 10/110
-     */
-    const TAX_10_110 = '10/110';
-
-    /**
-     * Ставка налога 18/118
-     */
-    const TAX_18_118 = '18/118';
-
     const TYPE = 'InvoiceLineTaxVAT';
 
     /**
@@ -44,8 +34,6 @@ class TaxMode
         self::TAX_0,
         self::TAX_10,
         self::TAX_18,
-        self::TAX_10_110,
-        self::TAX_18_118,
     ];
 
     /**
