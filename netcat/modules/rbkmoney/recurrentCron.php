@@ -126,7 +126,7 @@ class Recurrent
      */
     public function createInvoice(stdClass $payment, array $user)
     {
-        $rbkMoney = new nc_payment_system_rbkmoney();
+        $rbkMoney = new rbkmoney();
         $ps = nc_payment_factory::create(get_class($rbkMoney));
 
         $amount = number_format($payment->amount, 2, '.', '');
