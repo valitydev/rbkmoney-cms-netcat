@@ -2,11 +2,11 @@
     <input type="hidden" name="view" value="transactions">
     <div style="display: inline-block;">
         <label style="display: block; margin-bottom: 2px;"><? echo RBK_MONEY_DATE_FILTER . ' ' . RBK_MONEY_DATE_FILTER_FROM; ?></label>
-        <input size="8" style="margin-top: 0;" type="text" name="date_from" value="<?php echo htmlspecialchars($fromTime->format('d.m.Y')); ?>"/>
+        <input size="8" style="margin-top: 0;" type="text" name="date_from" value="<?php echo htmlspecialchars($fromTime->format(TRANSACTION_DATE_FORMAT)); ?>"/>
     </div>
     <div style="display: inline-block;">
         <label style="display: block; margin-bottom: 2px;"><?php echo RBK_MONEY_DATE_FILTER_TO; ?></label>
-        <input size="8" style="margin-top: 0;" type="text" name="date_to" value="<?php echo htmlspecialchars($toTime->format('d.m.Y')); ?>"/>
+        <input size="8" style="margin-top: 0;" type="text" name="date_to" value="<?php echo htmlspecialchars($toTime->format(TRANSACTION_DATE_FORMAT)); ?>"/>
     </div>
     <button type="submit" style="height: 30px"><?php echo RBK_MONEY_FILTER_SUBMIT; ?></button>
     <script>
@@ -40,8 +40,8 @@
                 $button = '<form action="admin.php">
                                 <input type="hidden" name="view" value="transactions">
                                 <input type="hidden" name="act" value="capturePayment">
-                                <input type="hidden" name="date_from" value="'.$fromTime->format('d.m.Y').'">
-                                <input type="hidden" name="date_to" value="'.$toTime->format('d.m.Y').'">
+                                <input type="hidden" name="date_from" value="'.$fromTime->format(TRANSACTION_DATE_FORMAT).'">
+                                <input type="hidden" name="date_to" value="'.$toTime->format(TRANSACTION_DATE_FORMAT).'">
                                 <input type="hidden" name="invoiceId" value="'.$transaction['invoiceId'].'">
                                 <input type="hidden" name="paymentId" value="'.$transaction['paymentId'].'">
                                 <button type="submit" style="height: 30px">' . CONFIRM_PAYMENT . '</button>
@@ -49,8 +49,8 @@
                 $button .= '<form action="admin.php">
                                 <input type="hidden" name="view" value="transactions">
                                 <input type="hidden" name="act" value="cancelPayment">
-                                <input type="hidden" name="date_from" value="'.$fromTime->format('d.m.Y').'">
-                                <input type="hidden" name="date_to" value="'.$toTime->format('d.m.Y').'">
+                                <input type="hidden" name="date_from" value="'.$fromTime->format(TRANSACTION_DATE_FORMAT).'">
+                                <input type="hidden" name="date_to" value="'.$toTime->format(TRANSACTION_DATE_FORMAT).'">
                                 <input type="hidden" name="invoiceId" value="'.$transaction['invoiceId'].'">
                                 <input type="hidden" name="paymentId" value="'.$transaction['paymentId'].'">
                                 <button type="submit" style="height: 30px">' . CANCEL_PAYMENT . '</button>
@@ -59,8 +59,8 @@
                 $button = '<form action="admin.php">
                                 <input type="hidden" name="view" value="transactions">
                                 <input type="hidden" name="act" value="createRefund">
-                                <input type="hidden" name="date_from" value="'.$fromTime->format('d.m.Y').'">
-                                <input type="hidden" name="date_to" value="'.$toTime->format('d.m.Y').'">
+                                <input type="hidden" name="date_from" value="'.$fromTime->format(TRANSACTION_DATE_FORMAT).'">
+                                <input type="hidden" name="date_to" value="'.$toTime->format(TRANSACTION_DATE_FORMAT).'">
                                 <input type="hidden" name="invoiceId" value="'.$transaction['invoiceId'].'">
                                 <input type="hidden" name="paymentId" value="'.$transaction['paymentId'].'">
                                 <button type="submit" style="height: 30px">' . CREATE_PAYMENT_REFUND . '</button>

@@ -5,10 +5,29 @@ $modulePath = $_SERVER['DOCUMENT_ROOT'] . '/rbkmoney/';
 include_once($_SERVER['DOCUMENT_ROOT'] . '/vars.inc.php');
 include_once($ROOT_FOLDER . 'connect_io.php');
 include_once(__DIR__ . "/$lang.lang.php");
+include_once(__DIR__ . "/netcat/modules/rbkmoney/settings.php");
 
 function CheckAbilityOfInstallation()
 {
-    return array('Success'=>1);
+    // Используем такой синтаксис для корректной выдачи ошибки при не соответствующей версии PHP
+    $result = array('Success' => 1);
+
+    if (PHP_VERSION_ID < MINIMAL_PHP_VERSION) {
+        $result['Success'] = 0;
+        $result['ErrorMessage'] = ERROR_MESSAGE_PHP_VERSION;
+    }
+
+    if (!function_exists('curl_version')) {
+        $result['Success'] = 0;
+
+        if (!empty($result['ErrorMessage'])) {
+            $result['ErrorMessage'] = PHP_EOL . ERROR_MESSAGE_CURL;
+        } else {
+            $result['ErrorMessage'] = ERROR_MESSAGE_CURL;
+        }
+    }
+
+    return $result;
 }
 
 function InstallThisModule()
@@ -16,7 +35,7 @@ function InstallThisModule()
     global $nc_core;
 
     $nc_core->db->query("INSERT INTO `Classificator_PaymentSystem` (`PaymentSystem_Name`, `PaymentSystem_Priority`, `Value`, `Checked`)
-	    VALUES ('RBKmoney', '1', 'nc_payment_system_rbkmoney', '1')"
+	    VALUES ('RBKmoney', '1', 'rbkmoney', '1')"
     );
 
     $nc_core->db->query("CREATE TABLE `RBKmoney_Recurrent_Items` (
@@ -74,5 +93,5 @@ function InstallThisModule()
       ('successUrl', 'http://example.ru', 'rbkmoney')"
     );
 
-    return array('Success'=>1);
+    return array('Success' => 1);
 }

@@ -34,3 +34,10 @@ define('PROPERTY_GEO_LOCATION_INFO', 'geoLocationInfo');
 define('PROPERTY_METADATA', 'metadata');
 define('RECURRENT_READY_STATUS', 'ready');
 define('RECURRENT_UNREADY_STATUS', 'unready');
+define('TRANSACTION_DATE_FORMAT', 'd.m.Y');
+define('MINIMAL_PHP_VERSION', 50500);
+if (!defined('PHP_VERSION_ID')) {
+    $version = explode('.', PHP_VERSION);
+
+    define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+}

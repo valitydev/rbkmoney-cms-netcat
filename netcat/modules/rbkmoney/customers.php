@@ -136,7 +136,7 @@ class Customers
             $contactInfo->setPhone($contact);
         }
 
-        $metadata = new Metadata(array(
+        $metadata = new Metadata([
             'shop' => nc_core('catalogue')->get_current('Domain'),
             'userId' => $userId,
             'firstInvoiceId' => $invoiceResponse->id,
@@ -144,7 +144,7 @@ class Customers
             'cms_version' => $this->ncCore->get_full_version_number(),
             'module' => MODULE_NAME_SETTING,
             'module_version' => MODULE_VERSION_SETTING,
-        ));
+        ]);
 
         $createCustomer = new CreateCustomerRequest(
             $this->settings['shopId'],
@@ -157,9 +157,9 @@ class Customers
         $this->saveCustomer($customer->customer, $userId);
 
         $response = $this->getCustomer($userId);
-        $response += array(
+        $response += [
             'hash' => $customer->payload,
-        );
+        ];
 
         return $response;
     }
@@ -208,7 +208,7 @@ class Customers
         $userId,
         CreateInvoiceResponse $invoiceResponse
     ) {
-        $articles = array();
+        $articles = [];
         $resultCustomer = null;
 
         /**
@@ -223,7 +223,7 @@ class Customers
             $article = $this->getArticle($item->get('source_component_id'), $item->get('source_item_id'));
             $articles[$item->get('item_price')] = $article;
 
-            $items[$article] = array(
+            $items[$article] = [
                 'amount' => $item->get('item_price'),
                 'name' => $item->get('name'),
                 'message_id' => $item->get('source_component_id'),
@@ -233,7 +233,7 @@ class Customers
                 'date' => new DateTime(),
                 'status' => RECURRENT_UNREADY_STATUS,
                 'invoice_id' => $invoice->get_id(),
-            );
+            ];
         }
         $intersections = array_intersect($articles, $this->getRecurrentItems());
 
@@ -264,7 +264,7 @@ class Customers
      */
     public function setRecurrentReadyStatuses(nc_payment_invoice $invoice)
     {
-        $articles = array();
+        $articles = [];
 
         /**
          * @var $item nc_payment_invoice_item

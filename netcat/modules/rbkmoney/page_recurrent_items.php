@@ -12,9 +12,9 @@
         } ?>
     </div>
 </form>
-<?php $UI_CONFIG->actionButtons[] = array(
+<?php $UI_CONFIG->actionButtons[] = [
     'id' => 'submit',
     'caption' => SAVE,
     'action' => "mainView.submitIframeForm('recurrent')"
-);
+];
 ?>

@@ -7,12 +7,13 @@
 /netcat/modules/rbkmoney/page_settings.php
 /netcat/modules/rbkmoney/page_transactions.php
 /netcat/modules/rbkmoney/recurrentCron.php
+/netcat/modules/rbkmoney/function.inc.php
 /netcat/modules/rbkmoney/settings.php
 /netcat/modules/rbkmoney/ru.lang.php
 /netcat/modules/rbkmoney/en.lang.php
 /netcat/modules/rbkmoney/ui_config.php
 /netcat/modules/rbkmoney/url_routes.js
-/netcat/modules/payment/classes/system/rbkmoney.php
+/netcat/modules/rbkmoney/rbkmoney.php
 /netcat/modules/rbkmoney/src/Api/ContactInfo.php
 /netcat/modules/rbkmoney/src/Api/Customers/CreateCustomer/Request/CreateCustomerRequest.php
 /netcat/modules/rbkmoney/src/Api/Customers/CreateCustomer/Response/CreateCustomerResponse.php

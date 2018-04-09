@@ -84,3 +84,5 @@ define('RECURRENT_PAYMENT', 'Recurrent payment');
 define('RBKMONEY_RESPONSE_NOT_RECEIVED', 'Response from RBKmoney is not received');
 define('REDIRECT_TO_PAYMENT_PAGE', 'Now you will be redirected to the payment page.');
 define('CLICK_BUTTON_PAY', 'If this does not happen - click on the button "Pay"');
+define('ERROR_MESSAGE_PHP_VERSION', 'The module requires PHP 5.5 or higher');
+define('ERROR_MESSAGE_CURL', 'The module requires curl');

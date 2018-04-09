@@ -23,7 +23,7 @@ use src\Client\Sender;
 use src\Exceptions\RBKMoneyException;
 use src\Exceptions\RequestException;
 
-class nc_payment_system_rbkmoney extends nc_payment_system
+class rbkmoney extends nc_payment_system
 {
 
     protected $accepted_currencies = ['RUB', 'USD', 'EUR'];
@@ -56,8 +56,8 @@ class nc_payment_system_rbkmoney extends nc_payment_system
         $this->nc_core = nc_Core::get_object();
         $this->settings = nc_Core::get_object()->get_settings('', 'rbkmoney');
 
-        include dirname(__DIR__) . '/../../rbkmoney/src/autoload.php';
-        include dirname(__DIR__) . '/../../rbkmoney/settings.php';
+        include __DIR__ . '/src/autoload.php';
+        include __DIR__ . '/settings.php';
 
         $this->sender = new Sender(new Client(
             $this->get_setting('apiKey'),
@@ -167,8 +167,6 @@ class nc_payment_system_rbkmoney extends nc_payment_system
         }
 
         $this->printCallbackErrorResponse($exception);
-
-        die;
     }
 
     /**
@@ -276,7 +274,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
                     $invoice->set('status', $invoice::STATUS_SUCCESS)->save();
                     $netshopOrder->set('status', NETSHOP_STATUS_SUCCESS)->save();
 
-                    include dirname(__DIR__) . '/../../rbkmoney/customers.php';
+                    include __DIR__ . '/customers.php';
                     $customers = new Customers($this->sender);
                     $customers->setRecurrentReadyStatuses($invoice);
 
@@ -551,7 +549,7 @@ class nc_payment_system_rbkmoney extends nc_payment_system
                         $necessaryWebhooks[CustomersTopicScope::CUSTOMERS_TOPIC]
                     );
                 }
-                include dirname(__DIR__) . '/../../rbkmoney/customers.php';
+                include __DIR__ . '/customers.php';
 
                 $customers = new Customers($this->sender);
                 $customer = $customers->createRecurrent($invoice, $AUTH_USER_ID, $invoiceResponse);

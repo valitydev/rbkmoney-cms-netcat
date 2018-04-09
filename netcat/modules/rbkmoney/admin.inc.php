@@ -130,7 +130,7 @@ class RbkMoneyAdmin
 
     public function transactions_save()
     {
-        //
+        // заглушка для проверки существования метода
     }
 
     /**
@@ -230,7 +230,7 @@ class RbkMoneyAdmin
             }
         } catch (WrongDataException $exception) {
             echo $exception->getMessage();
-            die;
+            exit;
         }
         if ($fromTime->getTimestamp() > $toTime->getTimestamp()) {
             $fromTime = new DateTime('today');
@@ -282,7 +282,7 @@ class RbkMoneyAdmin
         $domain = nc_core('catalogue')->get_current('Domain');
         $rbkMoneyPath = nc_core('catalogue')->get_url_by_host_name($domain) . nc_module_path('rbkmoney');
         $pagePath = $rbkMoneyPath . 'admin.php?view=transactions&page=(:num)';
-        $date = "&date_from={$fromTime->format('d.m.Y')}&date_to={$toTime->format('d.m.Y')}";
+        $date = "&date_from={$fromTime->format(TRANSACTION_DATE_FORMAT)}&date_to={$toTime->format(TRANSACTION_DATE_FORMAT)}";
 
         $paginator = new Paginator($payments->totalCount, $limit, $page, "$pagePath?$date");
 
@@ -373,7 +373,7 @@ class RbkMoneyAdmin
                 'user_name' => $user['Login'],
                 'user' => "/netcat/admin/user/index.php?phase=4&UserID={$customer['user_id']}",
                 'status' => $payment->status,
-                'amount' => $payment->amount, 2,
+                'amount' => $payment->amount,
                 'name' => $payment->name,
                 'date' => $payment->date,
             ];
@@ -394,7 +394,7 @@ class RbkMoneyAdmin
 
     public function recurrent_save()
     {
-        //
+        // заглушка для проверки существования метода
     }
 
     /**

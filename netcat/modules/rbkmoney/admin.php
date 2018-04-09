@@ -31,7 +31,7 @@ $UI_CONFIG = new ui_config_module_rbkmoney($view, '');
 $methodShow = $view . '_show';
 $methodSave = $view . '_save';
 
-if (!is_callable(array($rbkMoneyAdmin, $methodShow)) || !is_callable(array($rbkMoneyAdmin, $methodSave))) {
+if (!is_callable([$rbkMoneyAdmin, $methodShow]) || !is_callable([$rbkMoneyAdmin, $methodSave])) {
     nc_print_status('Incorrect view: '.  htmlspecialchars($view), 'error');
     exit;
 }
@@ -70,8 +70,6 @@ if ('transactions' === $view) {
     } else {
         $dateFrom = new DateTime($date_from);
     }
-
-    $dateTo = new DateTime();
 
     if (empty($date_to)) {
         $dateTo = new DateTime();

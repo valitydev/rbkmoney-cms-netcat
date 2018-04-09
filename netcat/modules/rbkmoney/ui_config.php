@@ -14,30 +14,30 @@ class ui_config_module_rbkmoney extends ui_config_module {
      */
     function ui_config_module_rbkmoney($view, $params)
     {
-		$this->tabs[] = array(
+		$this->tabs[] = [
             'id' => 'settings',
             'caption' => SETTINGS,
             'location' => 'module.rbkmoney.settings',
             'group' => 'admin',
-        );
-        $this->tabs[] = array(
+        ];
+        $this->tabs[] = [
             'id' => 'transactions',
             'caption' => TRANSACTIONS,
             'location' => 'module.rbkmoney.transactions',
             'group' => 'admin',
-        );
-        $this->tabs[] = array(
+        ];
+        $this->tabs[] = [
             'id' => 'recurrent',
             'caption' => RECURRENT,
             'location' => 'module.rbkmoney.recurrent',
             'group' => 'admin',
-        );
-        $this->tabs[] = array(
+        ];
+        $this->tabs[] = [
             'id' => 'recurrent_items',
             'caption' => RECURRENT_ITEMS,
             'location' => 'module.rbkmoney.recurrent_items',
             'group' => 'admin',
-        );
+        ];
 
 		$this->activeTab = $view;
 		$this->locationHash = "module.rbkmoney.$view" . ($params ? "($params)" : '');

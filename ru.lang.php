@@ -84,3 +84,5 @@ define('RECURRENT_PAYMENT', 'Рекуррентный платеж');
 define('RBKMONEY_RESPONSE_NOT_RECEIVED', 'Ответ от RBKmoney не получен');
 define('REDIRECT_TO_PAYMENT_PAGE', 'Сейчас вы будете перенаправлены на страницу оплаты.');
 define('CLICK_BUTTON_PAY', 'Если это не произошло - нажмите на кнопку "Оплатить"');
+define('ERROR_MESSAGE_PHP_VERSION', 'Для работы модуля необходима версия PHP 5.5 или выше');
+define('ERROR_MESSAGE_CURL', 'Для работы модуля необходим curl');
