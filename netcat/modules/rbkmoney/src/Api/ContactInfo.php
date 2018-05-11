@@ -43,7 +43,7 @@ class ContactInfo extends RBKmoneyDataObject
     public function setPhone($phoneNumber)
     {
         if (!preg_match('/^\+\d{4,15}$/', $phoneNumber)) {
-            throw new WrongDataException(WRONG_VALUE . ' `phoneNumber`', 400);
+            throw new WrongDataException(WRONG_VALUE . ' `phoneNumber`', HTTP_CODE_BAD_REQUEST);
         }
 
         $this->phoneNumber = $phoneNumber;

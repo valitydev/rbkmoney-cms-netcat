@@ -52,6 +52,14 @@ if ($nc_core->input->fetch_get_post('act') === 'recurrentDelete') {
     $rbkMoneyAdmin->recurrentDelete($recurrentId);
 }
 
+if ($nc_core->input->fetch_get_post('act') === 'deleteLogs') {
+    $rbkMoneyAdmin->deleteLogs();
+}
+
+if ($nc_core->input->fetch_get_post('act') === 'downloadLogs') {
+    $rbkMoneyAdmin->downloadLogs();
+}
+
 // Save information
 if ($nc_core->input->fetch_get_post('act') === 'save') {
     try {

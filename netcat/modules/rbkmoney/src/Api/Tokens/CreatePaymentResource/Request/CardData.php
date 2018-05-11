@@ -45,13 +45,13 @@ class CardData extends PaymentTool
     public function __construct($cardNumber, $expDate, $cvv)
     {
         if (!preg_match('/^\d{12,19}$/', $cardNumber)) {
-            throw new WrongDataException(WRONG_VALUE . ' `cardNumber`', 400);
+            throw new WrongDataException(WRONG_VALUE . ' `cardNumber`', HTTP_CODE_BAD_REQUEST);
         }
         if (!preg_match('/^\d{2}\/(\d{2}|\d{4})$/', $expDate)) {
-            throw new WrongDataException(WRONG_VALUE . ' `expDate`', 400);
+            throw new WrongDataException(WRONG_VALUE . ' `expDate`', HTTP_CODE_BAD_REQUEST);
         }
         if (!preg_match('/^\d{3,4}$/', $cvv)) {
-            throw new WrongDataException(WRONG_VALUE . ' `cvv`', 400);
+            throw new WrongDataException(WRONG_VALUE . ' `cvv`', HTTP_CODE_BAD_REQUEST);
         }
 
         $this->cardNumber = $cardNumber;

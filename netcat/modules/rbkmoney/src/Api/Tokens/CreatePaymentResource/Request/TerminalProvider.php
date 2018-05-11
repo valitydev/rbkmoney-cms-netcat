@@ -32,7 +32,7 @@ class TerminalProvider
     public function __construct($value)
     {
         if (!in_array($value, $this->validValues)) {
-            throw new WrongDataException(WRONG_VALUE . ' `terminalProvider`', 400);
+            throw new WrongDataException(WRONG_VALUE . ' `terminalProvider`', HTTP_CODE_BAD_REQUEST);
         }
 
         $this->value = $value;

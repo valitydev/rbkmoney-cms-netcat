@@ -90,7 +90,7 @@ class WebhookResponse extends RBKmoneyDataObject implements ResponseInterface
             return new CustomersTopicScope($scope->shopID, $scope->eventTypes);
         }
 
-        throw new WrongDataException(WRONG_VALUE . ' `topic`', 400);
+        throw new WrongDataException(WRONG_VALUE . ' `topic`', HTTP_CODE_BAD_REQUEST);
     }
 
 }

@@ -2,10 +2,13 @@
 
 namespace src\Client;
 
+use nc_Core;
 use src\Api\Exceptions\WrongRequestException;
 use src\Api\Interfaces\GetRequestInterface;
 use src\Api\Interfaces\RequestInterface;
 use src\Exceptions\RequestException;
+use src\Helpers\Log;
+use src\Helpers\Logger;
 use src\Interfaces\ClientInterface;
 use src\Api\Interfaces\PostRequestInterface;
 
@@ -16,7 +19,7 @@ class Client implements ClientInterface
     const HTTP_CREATED = 201;
     const HTTP_ACCEPTED = 202;
     const HTTP_NO_CONTENT = 204;
-    const SEE_OTHER = 303;
+    const HTTP_SEE_OTHER = 303;
 
     /**
      * Успешные коды ответов
@@ -124,6 +127,14 @@ class Client implements ClientInterface
     {
         $ch = curl_init($url);
 
+        $headers = '';
+
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($ch, $header_line) use (&$headers) {
+            $headers .= trim($header_line);
+
+            return strlen($header_line);
+        });
+
         curl_setopt_array($ch, $options);
 
         $result = curl_exec($ch);
@@ -132,7 +143,22 @@ class Client implements ClientInterface
 
         curl_close($ch);
 
-        if (self::SEE_OTHER === $responseInfo['http_code']) {
+        $ncCore = nc_Core::get_object();
+        $saveLogs = $ncCore->get_settings('saveLogs', 'rbkmoney');
+
+        if (SHOW_PARAMETER === $saveLogs) {
+            $log = new Log(
+                $url,
+                $options[CURLOPT_CUSTOMREQUEST],
+                json_encode($options[CURLOPT_HTTPHEADER], 256),
+                $result,
+                $headers
+            );
+            $logger = new Logger();
+            $logger->saveLog($log->setRequestBody($options[CURLOPT_POSTFIELDS]));
+        }
+
+        if (self::HTTP_SEE_OTHER === $responseInfo['http_code']) {
             return $responseInfo['location'];
         }
 

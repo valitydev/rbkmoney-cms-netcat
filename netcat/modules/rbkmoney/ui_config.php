@@ -38,6 +38,12 @@ class ui_config_module_rbkmoney extends ui_config_module {
             'location' => 'module.rbkmoney.recurrent_items',
             'group' => 'admin',
         ];
+        $this->tabs[] = [
+            'id' => 'logs',
+            'caption' => RBK_MONEY_LOGS,
+            'location' => 'module.rbkmoney.logs',
+            'group' => 'admin',
+        ];
 
 		$this->activeTab = $view;
 		$this->locationHash = "module.rbkmoney.$view" . ($params ? "($params)" : '');

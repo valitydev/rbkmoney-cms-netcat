@@ -11,6 +11,7 @@ use src\Api\Search\SearchPayments\Response\Payment;
 use src\Client\Client;
 use src\Client\Sender;
 use src\Exceptions\RequestException;
+use src\Helpers\Logger;
 use src\Helpers\Paginator;
 
 class RbkMoneyAdmin
@@ -95,23 +96,49 @@ class RbkMoneyAdmin
         return trim($result);
     }
 
-
-    /**
-     * Tab "Information".
-     */
     public function info_show()
     {
         require_once($this->moduleFolder . 'rbkmoney/page_info.php');
     }
 
     /**
-     * Save tad "Insformation".
-     *
      * @return boolean
      */
     public function info_save()
     {
         return true;
+    }
+
+    /**
+     * @return void
+     */
+    public function logs_show()
+    {
+        $logger = new Logger();
+        $logs = $logger->getLog();
+
+        require_once($this->moduleFolder . 'rbkmoney/page_logs.php');
+    }
+
+    public function logs_save()
+    {
+        // Заглушка для проверки существования метода
+    }
+
+    public function deleteLogs()
+    {
+        $logger = new Logger();
+
+        if ($logger->deleteLog()) {
+            nc_print_status(LOGS_DELETED, 'ok');
+        } else {
+            nc_print_status(LOGS_DELETE_ERROR, 'error');
+        }
+    }
+
+    public function downloadLogs() {
+        $logger = new Logger();
+        $logger->downloadLog();
     }
 
     /**
@@ -130,7 +157,7 @@ class RbkMoneyAdmin
 
     public function transactions_save()
     {
-        // заглушка для проверки существования метода
+        // Заглушка для проверки существования метода
     }
 
     /**
@@ -223,14 +250,14 @@ class RbkMoneyAdmin
     {
         try {
             if (!$this->settings['apiKey']) {
-                throw new WrongDataException(ERROR_API_KEY_IS_NOT_VALID, 400);
+                throw new WrongDataException(ERROR_API_KEY_IS_NOT_VALID, HTTP_CODE_BAD_REQUEST);
             }
             if (!$this->settings['shopId']) {
-                throw new WrongDataException(ERROR_SHOP_ID_IS_NOT_VALID, 400);
+                throw new WrongDataException(ERROR_SHOP_ID_IS_NOT_VALID, HTTP_CODE_BAD_REQUEST);
             }
         } catch (WrongDataException $exception) {
             echo $exception->getMessage();
-            exit;
+            die;
         }
         if ($fromTime->getTimestamp() > $toTime->getTimestamp()) {
             $fromTime = new DateTime('today');
@@ -274,7 +301,7 @@ class RbkMoneyAdmin
                 'flowStatus' => $payment->flow->type,
                 'paymentStatus' => $payment->status->getValue(),
                 'status' => $statuses[$payment->status->getValue()],
-                'amount' => substr_replace($payment->amount, '.', -2, 0),
+                'amount' => number_format($payment->amount/100, 2, '.', ''),
                 'createdAt' => $payment->createdAt->format(FULL_DATE_FORMAT),
             ];
         }
@@ -282,7 +309,7 @@ class RbkMoneyAdmin
         $domain = nc_core('catalogue')->get_current('Domain');
         $rbkMoneyPath = nc_core('catalogue')->get_url_by_host_name($domain) . nc_module_path('rbkmoney');
         $pagePath = $rbkMoneyPath . 'admin.php?view=transactions&page=(:num)';
-        $date = "&date_from={$fromTime->format(TRANSACTION_DATE_FORMAT)}&date_to={$toTime->format(TRANSACTION_DATE_FORMAT)}";
+        $date = "&date_from={$fromTime->format('d.m.Y')}&date_to={$toTime->format('d.m.Y')}";
 
         $paginator = new Paginator($payments->totalCount, $limit, $page, "$pagePath?$date");
 
@@ -394,7 +421,7 @@ class RbkMoneyAdmin
 
     public function recurrent_save()
     {
-        // заглушка для проверки существования метода
+        // Заглушка для проверки существования метода
     }
 
     /**
@@ -506,6 +533,14 @@ class RbkMoneyAdmin
                     : $this->settings['fiscalization']),
                 'options' => [FISCALIZATION_USE, FISCALIZATION_NOT_USE],
                 'placeholder' => FISCALIZATION,
+            ],
+            'saveLogs' => [
+                'label' => SAVE_LOGS,
+                'type' => 'select',
+                'value' => ($save ? $nc_core->input->fetch_get_post('saveLogs')
+                    : $this->settings['saveLogs']),
+                'options' => [NOT_SHOW_PARAMETER, SHOW_PARAMETER],
+                'placeholder' => SAVE_LOGS,
             ],
         ];
     }

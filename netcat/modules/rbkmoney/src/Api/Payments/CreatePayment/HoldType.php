@@ -34,7 +34,7 @@ class HoldType
     public function __construct($value)
     {
         if (!in_array($value, $this->validValues)) {
-            throw new WrongDataException(WRONG_VALUE . ' `onHoldExpiration`', 400);
+            throw new WrongDataException(WRONG_VALUE . ' `onHoldExpiration`', HTTP_CODE_BAD_REQUEST);
         }
 
         $this->value = $value;

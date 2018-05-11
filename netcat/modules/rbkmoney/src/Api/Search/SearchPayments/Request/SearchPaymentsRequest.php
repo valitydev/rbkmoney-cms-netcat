@@ -271,7 +271,7 @@ class SearchPaymentsRequest extends RBKmoneyDataObject implements GetRequestInte
     public function setCardNumberMask($cardNumberMask)
     {
         if (!preg_match('/^\d{2,4}$/', $cardNumberMask)) {
-            throw new WrongDataException(WRONG_VALUE . ' `cardNumberMask`', 400);
+            throw new WrongDataException(WRONG_VALUE . ' `cardNumberMask`', HTTP_CODE_BAD_REQUEST);
         }
 
         $this->cardNumberMask = $cardNumberMask;
@@ -311,7 +311,7 @@ class SearchPaymentsRequest extends RBKmoneyDataObject implements GetRequestInte
             }
         }
 
-        $url = preg_replace('/{shopID}/', $this->shopId, self::PATH);
+        $url = str_replace('{shopID}', $this->shopId, self::PATH);
 
         return $url . '?' . http_build_query($properties, '', '&');
     }

@@ -68,7 +68,7 @@ class CustomersTopicScope extends WebhookScope
         $diff = array_diff($eventTypes, $this->validTypes);
 
         if (!empty($diff)) {
-            throw new WrongDataException(WRONG_VALUE . ' `eventTypes`', 400);
+            throw new WrongDataException(WRONG_VALUE . ' `eventTypes`', HTTP_CODE_BAD_REQUEST);
         }
 
         $this->eventTypes = $eventTypes;

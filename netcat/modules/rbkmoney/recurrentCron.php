@@ -213,7 +213,7 @@ class Recurrent
                 if (in_array($vatRate, TaxMode::$validValues)) {
                     $taxMode = new TaxMode($vatRate);
                 } else {
-                    throw new WrongDataException(ERROR_TAX_RATE_IS_NOT_VALID . $payment->name, 400);
+                    throw new WrongDataException(ERROR_TAX_RATE_IS_NOT_VALID . $payment->name, HTTP_CODE_BAD_REQUEST);
                 }
                 $cart->setTaxMode($taxMode);
             }

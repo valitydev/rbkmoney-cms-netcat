@@ -54,7 +54,7 @@ class PaymentSystem
     public function __construct($value)
     {
         if (!in_array($value, $this->validValues)) {
-            throw new WrongDataException(WRONG_VALUE . ' `paymentSystem`', 400);
+            throw new WrongDataException(WRONG_VALUE . ' `paymentSystem`', HTTP_CODE_BAD_REQUEST);
         }
 
         $this->value = $value;

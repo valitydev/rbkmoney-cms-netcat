@@ -22,6 +22,8 @@ use src\Client\Client;
 use src\Client\Sender;
 use src\Exceptions\RBKMoneyException;
 use src\Exceptions\RequestException;
+use src\Helpers\Log;
+use src\Helpers\Logger;
 
 class rbkmoney extends nc_payment_system
 {
@@ -127,7 +129,7 @@ class rbkmoney extends nc_payment_system
             $signature = $this->getSignatureFromHeader(getenv('HTTP_CONTENT_SIGNATURE'));
 
             if (empty($signature)) {
-                throw new WrongDataException(WRONG_SIGNATURE, 403);
+                throw new WrongDataException(WRONG_SIGNATURE, HTTP_CODE_FORBIDDEN);
             }
 
             $signDecode = base64_decode(strtr($signature, '-_,', '+/='));
@@ -135,11 +137,11 @@ class rbkmoney extends nc_payment_system
             $message = file_get_contents('php://input');
 
             if (empty($message)) {
-                throw new WrongDataException(WRONG_VALUE . ' `callback`', 400);
+                throw new WrongDataException(WRONG_VALUE . ' `callback`', HTTP_CODE_BAD_REQUEST);
             }
 
             if (!$this->verificationSignature($message, $signDecode)) {
-                throw new WrongDataException(WRONG_SIGNATURE, 403);
+                throw new WrongDataException(WRONG_SIGNATURE, HTTP_CODE_FORBIDDEN);
             }
 
             $callback = json_decode($message);
@@ -151,6 +153,30 @@ class rbkmoney extends nc_payment_system
             }
         } catch (RBKmoneyException $exception) {
             $this->callbackError($exception);
+        }
+
+        if (SHOW_PARAMETER === $this->get_setting('saveLogs')) {
+            if (!empty($exception)) {
+                $responseMessage = $exception->getMessage();
+                $responseCode = $exception->getCode();
+            } else {
+                $responseMessage = '';
+                $responseCode = 200;
+            }
+
+            $log = new Log(
+                $this->get_callback_script_url(),
+                'POST',
+                json_encode(getallheaders()),
+                $responseMessage,
+                'Content-Type: application/json'
+            );
+
+            $log->setRequestBody(file_get_contents('php://input'))
+                ->setResponseCode($responseCode);
+
+            $logger = new Logger();
+            $logger->saveLog($log);
         }
     }
 
@@ -262,7 +288,7 @@ class rbkmoney extends nc_payment_system
                     $invoiceStatus = $invoice::STATUS_WAITING;
                     $netshopStatus = NETSHOP_STATUS_WAITING;
                 } else {
-                    throw new WrongDataException(ERROR_HOLD_STATUS_IS_NOT_VALID, 400);
+                    throw new WrongDataException(ERROR_HOLD_STATUS_IS_NOT_VALID, HTTP_CODE_BAD_REQUEST);
                 }
 
                 if (in_array($type, [
@@ -335,7 +361,7 @@ class rbkmoney extends nc_payment_system
         $signature = preg_replace("/alg=(\S+);\sdigest=/", '', $contentSignature);
 
         if (empty($signature)) {
-            throw new WrongDataException(WRONG_SIGNATURE, 403);
+            throw new WrongDataException(WRONG_SIGNATURE, HTTP_CODE_FORBIDDEN);
         }
 
         return $signature;
@@ -421,7 +447,7 @@ class rbkmoney extends nc_payment_system
                     $taxMode = new TaxMode($vatRate);
                 } else {
                     $this->add_error('<a href="/">На главную</a>');
-                    throw new WrongDataException(ERROR_TAX_RATE_IS_NOT_VALID . $itemName, 400);
+                    throw new WrongDataException(ERROR_TAX_RATE_IS_NOT_VALID . $itemName, HTTP_CODE_BAD_REQUEST);
                 }
 
                 $carts[] = $cart->setTaxMode($taxMode);
@@ -430,7 +456,7 @@ class rbkmoney extends nc_payment_system
 
         if ($sum === 0) {
             $this->add_error('<a href="/">На главную</a>');
-            throw new WrongDataException(ERROR_AMOUNT_IS_NOT_VALID, 400);
+            throw new WrongDataException(ERROR_AMOUNT_IS_NOT_VALID, HTTP_CODE_BAD_REQUEST);
         }
 
         $endDate = new DateTime();
@@ -521,7 +547,7 @@ class rbkmoney extends nc_payment_system
         $rbkMoneyInvoices = $this->getInvoice($invoice);
 
         // Даем пользователю 5 минут на заполнение даных карты
-        $diff = new DateInterval('PT5M');
+        $diff = new DateInterval(END_INVOICE_INTERVAL_SETTING);
 
         foreach ($rbkMoneyInvoices as $rbkMoneyInvoice) {
             $endDate = new DateTime($rbkMoneyInvoice->end_date);
