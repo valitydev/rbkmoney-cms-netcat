@@ -161,7 +161,7 @@ class rbkmoney extends nc_payment_system
                 $responseCode = $exception->getCode();
             } else {
                 $responseMessage = '';
-                $responseCode = 200;
+                $responseCode = HTTP_CODE_OK;
             }
 
             $log = new Log(

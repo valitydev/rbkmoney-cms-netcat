@@ -39,6 +39,7 @@ define('RECURRENT_READY_STATUS', 'ready');
 define('RECURRENT_UNREADY_STATUS', 'unready');
 define('TRANSACTION_DATE_FORMAT', 'd.m.Y');
 define('MINIMAL_PHP_VERSION', 50500);
+define('HTTP_CODE_OK', 200);
 define('HTTP_CODE_BAD_REQUEST', 400);
 define('HTTP_CODE_FORBIDDEN', 403);
 define('LOG_FILE_COMMENT', 'Отправьте этот файл в support@rbkmoney.ru');
