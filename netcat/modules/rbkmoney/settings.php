@@ -4,7 +4,7 @@ define('RBK_MONEY_CHECKOUT_URL_SETTING', 'https://checkout.rbk.money/checkout.js
 define('INVOICE_LIFETIME_DATE_INTERVAL_SETTING', 'PT2H');
 define('END_INVOICE_INTERVAL_SETTING', 'PT5M');
 define('MODULE_NAME_SETTING', 'RBKmoney');
-define('MODULE_VERSION_SETTING', '1.0');
+define('MODULE_VERSION_SETTING', '1.1');
 define('DELIVERY_VAT_SETTING', '18');
 define('FULL_DATE_FORMAT', 'Y-m-d H:i:s');
 define('NETSHOP_STATUS_SUCCESS', 3);
