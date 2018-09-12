@@ -119,11 +119,10 @@ class Client implements ClientInterface
         $headers = '';
 
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $header_line) use (&$headers) {
-                $headers .= trim($header_line);
+            $headers .= trim($header_line);
 
-                return strlen($header_line);
-            }
-        );
+            return strlen($header_line);
+        });
 
         curl_setopt_array($ch, $options);
 
