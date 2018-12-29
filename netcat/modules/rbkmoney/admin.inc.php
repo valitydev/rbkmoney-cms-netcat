@@ -239,7 +239,7 @@ class RbkMoneyAdmin
         DateTime $fromTime,
         DateTime $toTime,
         $token = null,
-        $limit = 2
+        $limit = 10
     ) {
         try {
             if (!$this->settings['apiKey']) {
